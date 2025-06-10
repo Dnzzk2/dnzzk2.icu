@@ -66,6 +66,7 @@ export const SOCIAL_LINKS: SocialLink[] = [
  * @property {Object} SKILLS_DATA.skills - 技能展示数据 / Skills showcase data
  * @property {string} SKILLS_DATA.skills.icon - 技能图标 / Skills icon
  * @property {string} SKILLS_DATA.skills.name - 技能名称 / Skills name
+ * get icon https://icon-sets.iconify.design/
  */
 export const SKILLSSHOWCASE_CONFIG: SkillsShowcaseConfig = {
   SKILLS_ENABLED: true,
@@ -95,6 +96,10 @@ export const SKILLSSHOWCASE_CONFIG: SkillsShowcaseConfig = {
       direction: 'right',
       skills: [
         {
+          name: 'Astro',
+          icon: 'icon-[lineicons--astro]',
+        },
+        {
           name: 'Node.js',
           icon: 'icon-[mdi--nodejs]',
         },
@@ -103,12 +108,16 @@ export const SKILLSSHOWCASE_CONFIG: SkillsShowcaseConfig = {
           icon: 'icon-[mdi--react]',
         },
         {
-          name: 'Git',
-          icon: 'icon-[mdi--git]',
-        },
-        {
           name: 'Next.js',
           icon: 'icon-[devicon--nextjs]',
+        },
+        {
+          name: 'Tailwind CSS',
+          icon: 'icon-[mdi--tailwind]',
+        },
+        {
+          name: 'Iconify',
+          icon: 'icon-[line-md--iconify2-static]',
         },
       ],
     },
@@ -116,21 +125,20 @@ export const SKILLSSHOWCASE_CONFIG: SkillsShowcaseConfig = {
       direction: 'left',
       skills: [
         {
-          name: 'Tailwind CSS',
-          icon: 'icon-[mdi--tailwind]',
+          name: 'Ubuntu',
+          icon: 'icon-[mdi--ubuntu]',
         },
-
         {
-          name: 'GraphQL',
-          icon: 'icon-[mdi--graphql]',
+          name: 'Git',
+          icon: 'icon-[mdi--git]',
         },
         {
           name: 'MongoDB',
           icon: 'icon-[lineicons--mongodb]',
         },
         {
-          name: 'Docker',
-          icon: 'icon-[mdi--docker]',
+          name: 'Vercel',
+          icon: 'icon-[lineicons--vercel]',
         },
       ],
     },
@@ -193,4 +201,15 @@ export const PROJECTS_CONFIG: ProjectConfig = {
 }
 
 // get icon https://icon-sets.iconify.design/
-export const ProjectList: Project[] = []
+export const ProjectList: Project[] = [
+  {
+    name: 'Litos',
+    description: 'A Simple & Modern Blog Theme for Astro.',
+    githubUrl: 'https://github.com/Dnzzk2/Litos',
+    website: 'https://litos.vercel.app/',
+    type: 'image',
+    icon: '/projects/litos.png',
+    star: 11,
+    fork: 4,
+  },
+]
