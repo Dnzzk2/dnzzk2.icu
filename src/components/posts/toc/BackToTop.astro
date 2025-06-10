@@ -1,0 +1,45 @@
+---
+
+---
+
+<button
+  id="backToTop"
+  class="group flex items-center justify-center w-8 h-8
+           rounded-md bg-primary/10 hover:bg-primary/15
+           text-primary/70 hover:text-primary
+           transition-all duration-200
+           opacity-0 invisible translate-y-4
+           dark:bg-primary/15 dark:hover:bg-primary/25
+           dark:text-primary/80 dark:hover:text-primary"
+  aria-label="Back to top"
+>
+  <span class="icon-[ph--arrow-up] w-4 h-4 transform transition-transform group-hover:-translate-y-0.5"></span>
+</button>
+
+<script>
+  function handleScroll() {
+    const backToTop = document.getElementById('backToTop')
+    if (!backToTop) return
+
+    if (window.scrollY > 300) {
+      backToTop.classList.remove('opacity-0', 'invisible', 'translate-y-4')
+    } else {
+      backToTop.classList.add('opacity-0', 'invisible', 'translate-y-4')
+    }
+  }
+
+  function scrollToTop() {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    })
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    const backToTop = document.getElementById('backToTop')
+    if (!backToTop) return
+
+    window.addEventListener('scroll', handleScroll)
+    backToTop.addEventListener('click', scrollToTop)
+  })
+</script>

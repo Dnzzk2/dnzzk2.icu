@@ -1,0 +1,37 @@
+---
+import { TAGS_CONFIG } from '~/config'
+import Layout from '~/layouts/Layout.astro'
+import { getCollection } from 'astro:content'
+
+const allPosts = await getCollection('posts')
+const tags = [...new Set(allPosts.flatMap((post) => post.data.tags || []))]
+
+const { title, description, introduce } = TAGS_CONFIG
+---
+
+<Layout {title} {description}>
+  <div class="fullPage relative z-[1] py-8 pb-10 px-6 sm:px-8">
+    <h1 class="tracking-tight text-4xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent pb-1.5">{title}</h1>
+    <div class="pro text-muted-foreground text-balance">
+      <p class="mt-2">{introduce}</p>
+    </div>
+
+    <div class="mt-12 flex flex-wrap gap-4" data-astro-transition="animate">
+      {
+        tags.map((tag) => {
+          const postCount = allPosts.filter((post) => post.data.tags?.includes(tag)).length
+          return (
+            <a
+              href={`/tags/${tag}`}
+              class="group relative flex items-center gap-2 px-4 py-2 rounded-md bg-muted/50 hover:bg-muted transition-all"
+            >
+              <span class="text-sm font-medium text-foreground">#{tag}</span>
+              <span class="text-xs text-muted-foreground group-hover:text-foreground transition-colors">{postCount}</span>
+              <span class="absolute inset-0 border border-border/0 group-hover:border-border/40 rounded-md transition-colors" />
+            </a>
+          )
+        })
+      }
+    </div>
+  </div>
+</Layout>

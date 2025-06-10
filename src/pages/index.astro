@@ -1,0 +1,110 @@
+---
+import { SITE, SOCIAL_LINKS } from '~/config.ts'
+import { GET } from './api/github.ts'
+import { GITHUB_CONFIG, POSTS_CONFIG, SKILLSSHOWCASE_CONFIG } from '~/config.ts'
+import { padMissingWeeks, postsSort } from '~/lib/utils'
+import { getCollection } from 'astro:content'
+import Layout from '~/layouts/Layout.astro'
+import SectionDivider from '~/components/base/SectionDivider.astro'
+import GithubContributions from '~/components/base/GithubContributions.astro'
+import SocialLink from '~/components/base/SocialLink.astro'
+import List from '~/components/posts/card/List.astro'
+import SkillsShowcase from '~/components/base/SkillsShowcase.astro'
+
+const { ENABLED } = GITHUB_CONFIG
+const { size, type } = POSTS_CONFIG.homePageConfig
+const { SKILLS_ENABLED, SKILLS_DATA } = SKILLSSHOWCASE_CONFIG
+
+let githubFollowerCount = null
+let githubGraphqlData: Additional.Github.Week[] = []
+
+if (ENABLED) {
+  try {
+    const githubInfo = await GET(Astro)
+    const githubData = await githubInfo.json()
+
+    // 默认53周，不足53周则填充
+    const last53weeks = githubData?.data?.viewer?.contributionsCollection?.contributionCalendar?.weeks.slice(-53)
+    const newWeeks = padMissingWeeks(last53weeks, 53)
+
+    githubGraphqlData = newWeeks
+    githubFollowerCount = githubData?.data.viewer.followers.totalCount || null
+  } catch (error) {
+    console.error('Failed to fetch GitHub data:', error)
+  }
+}
+
+const allPosts = await getCollection('posts')
+const posts = postsSort(allPosts).slice(0, size)
+---
+
+<Layout title="关于我" description={SITE.description}>
+  <div class="relative z-10">
+    <div class="py-8 pb-10 px-6 sm:px-8">
+      <h1 class="flex flex-col gap-2">
+        <span class="text-4xl sm:text-5xl tracking-tight"> Dnzzk2 </span>
+        <span class="text-muted-foreground font-light text-xl sm:text-2xl block tracking-wide text-balance"> 前端开发 & 游戏玩家</span>
+      </h1>
+      <div class="pro text-muted-foreground text-balance">
+        <p>你好👋，我是许留山，英文笔名 Dnzzk2 。</p>
+        <p>
+          目前从事于前端开发工作，对 UI 设计略感兴趣，平时会关注 UI
+          设计和前端，了解些新鲜事物。工作之余，我热衷于游戏，对英雄联盟、无畏契约、永劫无间、黑神话悟空等游戏均有涉猎，除此之外，我也喜欢用相机记录生活中的风景与点滴。
+        </p>
+        <p>
+          如果你有兴趣了解我的更多动态，欢迎访问我的博客中的
+          "随笔"，那里分享着我的成长故事、遇到的困惑以及一些个人思考。期待与你在这里相遇！
+        </p>
+      </div>
+      <div class="mt-6 flex gap-6">
+        {
+          SOCIAL_LINKS.map((item) => {
+            const isGithub = item.name.toLowerCase() === 'github'
+            if (isGithub && ENABLED && githubFollowerCount !== null) {
+              return (
+                <SocialLink href={item.url} icon={item.icon} count={githubFollowerCount} label="followers" aria-label="Follow on Github" />
+              )
+            }
+            return <SocialLink href={item.url} icon={item.icon} aria-label={`Link of ${item.name}`} count={item.count} label="followers" />
+          })
+        }
+      </div>
+    </div>
+  </div>
+  {
+    ENABLED && githubGraphqlData.length > 0 && (
+      <>
+        <SectionDivider />
+        <div class="py-8 pb-10 px-6 max-md:px-6">
+          <div class="px-2 max-md:px-0">
+            <h2 class="text-2xl sm:text-3xl">动态</h2>
+            <p class="text-muted-foreground mb-6 mt-1">记录每一天的编程点滴</p>
+          </div>
+          <GithubContributions weeks={githubGraphqlData} />
+        </div>
+      </>
+    )
+  }
+  {
+    SKILLS_ENABLED && SKILLS_DATA.length > 0 && (
+      <>
+        <SectionDivider />
+        <div class="py-8 pb-10 px-6 max-md:px-6">
+          <div class="px-2 max-md:px-0">
+            <h2 class="text-2xl sm:text-3xl">技术</h2>
+            <p class="text-muted-foreground mb-6 mt-1">以下是我在使用的一些技术:</p>
+          </div>
+          <SkillsShowcase skillsData={SKILLS_DATA} />
+        </div>
+      </>
+    )
+  }
+  <SectionDivider />
+  <div class="py-8 pb-10 px-6 sm:px-8">
+    <h2 class="text-2xl sm:text-3xl">随笔</h2>
+    <p class="text-muted-foreground mb-6 mt-1">
+      最近的 {posts.length} 篇随笔，感兴趣可以看看
+    </p>
+    <List {posts} {type} heroImageLayout={POSTS_CONFIG.homePageConfig?.heroImageLayout} />
+  </div>
+</Layout>

@@ -1,0 +1,37 @@
+---
+import { cn } from '~/lib/utils'
+import { POSTS_CONFIG } from '~/config'
+import type { CollectionEntry } from 'astro:content'
+
+interface Props {
+  class?: string
+  post: CollectionEntry<'posts'>
+  posts: CollectionEntry<'posts'>[]
+}
+
+const { class: className, post, posts } = Astro.props
+
+// 计算随笔在第几页
+const postIndex = posts.findIndex((p) => p.slug === post.slug)
+const pageSize = POSTS_CONFIG.postPageConfig.size
+const pageNumber = Math.floor(postIndex / pageSize) + 1
+const pageUrl = pageNumber === 1 ? '/posts' : `/posts/${pageNumber}`
+---
+
+<a
+  href={pageUrl}
+  class={cn(
+    'group flex items-center gap-2',
+    'px-2 h-8 rounded-md',
+    'bg-primary/10 hover:bg-primary/15',
+    'text-primary/70 hover:text-primary',
+    'transition-colors duration-200',
+    'dark:bg-primary/15 dark:hover:bg-primary/25',
+    'dark:text-primary/80 dark:hover:text-primary',
+    className
+  )}
+  aria-label="Back to posts"
+>
+  <span class="icon-[ph--arrow-left] w-4 h-4"></span>
+  <span class="text-sm font-medium">Back to posts</span>
+</a>

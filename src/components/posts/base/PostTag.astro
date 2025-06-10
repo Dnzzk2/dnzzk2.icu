@@ -1,0 +1,21 @@
+---
+import { cn } from '~/lib/utils'
+
+interface Props {
+  tag: string
+  class?: string
+}
+
+const { tag, class: className }: Props = Astro.props
+---
+
+<a
+  href={`/tags/${tag}`}
+  aria-label={`View posts tagged ${tag}`}
+  class={cn(
+    'inline-block text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 bg-muted/50 text-muted-foreground rounded hover:bg-muted transition-colors cursor-pointer',
+    className
+  )}
+>
+  # {tag}
+</a>
