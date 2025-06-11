@@ -47,10 +47,7 @@ const { post }: Props = Astro.props
   </article>
   {
     post.data.recommend && (
-      <span
-        class="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 -translate-x-4 size-16 sm:size-20 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-primary/10 dark:text-primary/20 icon-[solar--star-rainbow-bold-duotone]"
-        aria-label="Recommended post"
-      />
+      <span class="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 -translate-x-4 size-16 sm:size-20 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-primary/10 dark:text-primary/20 icon-[solar--star-rainbow-bold-duotone]" />
     )
   }
   <div class="absolute left-0 top-0 h-full w-0.5 sm:w-1 scale-y-0 bg-accent/80 transition-transform duration-300 group-hover:scale-y-100">

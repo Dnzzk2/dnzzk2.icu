@@ -2,6 +2,7 @@
 title: '六月印象'
 description: '一个属于初夏的午后时光'
 pubDate: 2025-06-07
+updatedDate: 2025-06-12
 author: 'Dnzzk2'
 recommend: true
 tags: ['散文']
