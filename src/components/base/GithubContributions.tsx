@@ -4,17 +4,19 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { cn } from '~/lib/utils'
 import Tooltip, { TooltipProvider } from './Tooltip'
 
-interface ContributionDay {
+// API from https://github.com/grubersjoe/github-contributions-api
+interface Contribution {
   date: string
   count: number
-  level: 0
+  level: 0 | 1 | 2 | 3 | 4
 }
 
-interface YearData {
-  contributions: ContributionDay[]
+interface Response {
   total: {
-    lastYear: number
+    [year: number]: number
+    [year: string]: number // 'lastYear'
   }
+  contributions: Array<Contribution>
 }
 
 interface ErrorData {
@@ -36,8 +38,8 @@ const ERROR_PATTERN = [
 ] as const
 
 // 生成ERROR贡献数据
-function generateErrorContributions(): YearData {
-  const contributions = Array.from({ length: 371 }, (_, index): ContributionDay => {
+function generateErrorContributions(): Response {
+  const contributions = Array.from({ length: 371 }, (_, index): Contribution => {
     const weekIndex = Math.floor(index / 7)
     const dayIndex = index % 7
 
@@ -68,10 +70,10 @@ function generateErrorContributions(): YearData {
 }
 
 // 生成默认占位数据
-function generatePlaceholderContributions(): YearData {
+function generatePlaceholderContributions(): Response {
   const contributions = Array.from(
     { length: 371 },
-    (_, index): ContributionDay => ({
+    (_, index): Contribution => ({
       date: new Date(Date.now() - (371 - index) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       count: 0,
       level: 0,
@@ -86,21 +88,21 @@ function generatePlaceholderContributions(): YearData {
   }
 }
 
-async function fetchContributions(username: string): Promise<YearData> {
+async function fetchContributions(username: string): Promise<Response> {
   const response = await fetch(`https://github-contributions-api.jogruber.de/v4/${username}?y=last`)
-  const data: YearData | ErrorData = await response.json()
+  const data: Response | ErrorData = await response.json()
 
   if (!response.ok) {
     throw Error(`Fetching GitHub contribution data for "${username}" failed: ${(data as ErrorData).error}`)
   }
 
-  return data as YearData
+  return data as Response
 }
 
 export default function GithubContributions({ username, tooltipEnabled }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const [data, setData] = useState<YearData | null>(generatePlaceholderContributions())
-  const [errorVisible, setErrorVisible] = useState(false)
+  const [data, setData] = useState<Response | null>(generatePlaceholderContributions())
+  const [errorVisible, setErrorVisible] = useState(true)
 
   const scrollToRight = useCallback(() => {
     if (containerRef.current) {
@@ -109,12 +111,13 @@ export default function GithubContributions({ username, tooltipEnabled }: Props)
   }, [])
 
   const fetchData = useCallback(() => {
-    setErrorVisible(false)
     fetchContributions(username)
       .then(setData)
       .then(scrollToRight)
+      .then(() => {
+        setErrorVisible(false)
+      })
       .catch(() => {
-        setErrorVisible(true)
         setData(generateErrorContributions())
       })
   }, [username])
@@ -123,7 +126,7 @@ export default function GithubContributions({ username, tooltipEnabled }: Props)
 
   // 将贡献数据按周分组
   const weeks =
-    data?.contributions.reduce<ContributionDay[][]>((acc, day, index) => {
+    data?.contributions.reduce<Contribution[][]>((acc, day, index) => {
       const weekIndex = Math.floor(index / 7)
       if (!acc[weekIndex]) {
         acc[weekIndex] = []
@@ -152,7 +155,7 @@ export default function GithubContributions({ username, tooltipEnabled }: Props)
                 <Tooltip key={dayIndex} content={tooltipContent} disabled={!tooltipEnabled || errorVisible}>
                   <div
                     className={cn(
-                      'size-2 relative hover:scale-125 transition-all duration-700',
+                      'size-2 relative hover:scale-125 transition-all duration-500',
                       count === 0
                         ? 'bg-zinc-200 dark:bg-zinc-900'
                         : count < 5
