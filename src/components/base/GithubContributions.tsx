@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { cn } from '~/lib/utils'
 import Tooltip, { TooltipProvider } from './Tooltip'
 
@@ -26,6 +26,66 @@ interface Props {
   tooltipEnabled: boolean
 }
 
+// ERROR图案配置
+const ERROR_PATTERN = [
+  [1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1],
+  [1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+  [1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1],
+  [1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+  [1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1],
+] as const
+
+// 生成ERROR贡献数据
+function generateErrorContributions(): YearData {
+  const contributions = Array.from({ length: 371 }, (_, index): ContributionDay => {
+    const weekIndex = Math.floor(index / 7)
+    const dayIndex = index % 7
+
+    // 计算居中位置
+    const patternStartWeek = Math.floor((53 - 19) / 2)
+    const patternStartRow = Math.floor((7 - 5) / 2)
+    const relativeWeek = weekIndex - patternStartWeek
+    const relativeRow = dayIndex - patternStartRow
+
+    let count = 0
+    if (relativeWeek >= 0 && relativeWeek < 19 && relativeRow >= 0 && relativeRow < 5) {
+      count = ERROR_PATTERN[relativeRow]?.[relativeWeek] === 1 ? 10 : 0 // 10表示最深色
+    }
+
+    return {
+      date: '1',
+      count,
+      level: 0,
+    }
+  })
+
+  return {
+    contributions,
+    total: {
+      lastYear: 0,
+    },
+  }
+}
+
+// 生成默认占位数据
+function generatePlaceholderContributions(): YearData {
+  const contributions = Array.from(
+    { length: 371 },
+    (_, index): ContributionDay => ({
+      date: new Date(Date.now() - (371 - index) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      count: 0,
+      level: 0,
+    })
+  )
+
+  return {
+    contributions,
+    total: {
+      lastYear: 0,
+    },
+  }
+}
+
 async function fetchContributions(username: string): Promise<YearData> {
   const response = await fetch(`https://github-contributions-api.jogruber.de/v4/${username}?y=last`)
   const data: YearData | ErrorData = await response.json()
@@ -39,63 +99,25 @@ async function fetchContributions(username: string): Promise<YearData> {
 
 export default function GithubContributions({ username, tooltipEnabled }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const [data, setData] = useState<YearData | null>({
-    contributions: Array.from({ length: 371 }, (_, index) => ({
-      date: new Date(Date.now() - (371 - index) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      count: 0,
-      level: 0,
-    })),
-    total: {
-      lastYear: 0,
-    },
-  })
+  const [data, setData] = useState<YearData | null>(generatePlaceholderContributions())
   const [error, setError] = useState<Error | null>(null)
   const [errorVisible, setErrorVisible] = useState(false)
 
+  const scrollToRight = useCallback(() => {
+    if (containerRef.current) {
+      containerRef.current.scrollLeft = containerRef.current.scrollWidth
+    }
+  }, [])
+
   const fetchData = useCallback(() => {
     setError(null)
+    setErrorVisible(false)
     fetchContributions(username)
       .then(setData)
+      .then(scrollToRight)
       .catch(() => {
         setErrorVisible(true)
-        // 生成ERROR格子数据
-        const errorContributions = Array.from({ length: 371 }, (_, index) => {
-          const weekIndex = Math.floor(index / 7)
-          const dayIndex = index % 7
-
-          // ERROR图案 (5行×19列，每个字母间隔1格)
-          const errorPattern = [
-            [1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1],
-            [1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-            [1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1],
-            [1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-            [1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1],
-          ]
-
-          // 计算居中位置
-          const patternStartWeek = Math.floor((53 - 19) / 2)
-          const patternStartRow = Math.floor((7 - 5) / 2)
-          const relativeWeek = weekIndex - patternStartWeek
-          const relativeRow = dayIndex - patternStartRow
-
-          let count = 0
-          if (relativeWeek >= 0 && relativeWeek < 19 && relativeRow >= 0 && relativeRow < 5) {
-            count = errorPattern[relativeRow]?.[relativeWeek] === 1 ? 10 : 0 // 10表示最深色
-          }
-
-          return {
-            date: '1',
-            count,
-            level: 0,
-          } as ContributionDay
-        })
-
-        setData({
-          contributions: errorContributions,
-          total: {
-            lastYear: 0,
-          },
-        })
+        setData(generateErrorContributions())
       })
   }, [username])
 
@@ -114,7 +136,7 @@ export default function GithubContributions({ username, tooltipEnabled }: Props)
 
   return (
     <TooltipProvider>
-      <div ref={containerRef} className="grid grid-flow-col gap-1 overflow-x-auto py-2 px-2 max-md:px-0">
+      <div ref={containerRef} className="grid grid-flow-col gap-1 overflow-x-auto py-2 px-2 max-md:px-0 scroll-smooth">
         {weeks.map((week, weekIndex) => (
           <div key={weekIndex} className="grid grid-rows-7 gap-1">
             {week.map((contribution, dayIndex) => {
