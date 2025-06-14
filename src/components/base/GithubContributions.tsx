@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { cn } from '~/lib/utils'
 import Tooltip, { TooltipProvider } from './Tooltip'
 
@@ -100,7 +100,6 @@ async function fetchContributions(username: string): Promise<YearData> {
 export default function GithubContributions({ username, tooltipEnabled }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [data, setData] = useState<YearData | null>(generatePlaceholderContributions())
-  const [error, setError] = useState<Error | null>(null)
   const [errorVisible, setErrorVisible] = useState(false)
 
   const scrollToRight = useCallback(() => {
@@ -110,7 +109,6 @@ export default function GithubContributions({ username, tooltipEnabled }: Props)
   }, [])
 
   const fetchData = useCallback(() => {
-    setError(null)
     setErrorVisible(false)
     fetchContributions(username)
       .then(setData)

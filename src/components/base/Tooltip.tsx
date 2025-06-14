@@ -1,19 +1,6 @@
 import { useRef, useState, createContext, useContext } from 'react'
 import type { ReactNode } from 'react'
-import {
-  useFloating,
-  autoUpdate,
-  offset,
-  shift,
-  arrow,
-  useHover,
-  useFocus,
-  useDismiss,
-  useRole,
-  useInteractions,
-  FloatingPortal,
-  flip,
-} from '@floating-ui/react'
+import { useFloating, autoUpdate, offset, shift, arrow, FloatingPortal, flip } from '@floating-ui/react'
 
 // 单例 Tooltip 上下文
 interface TooltipContextType {
@@ -33,7 +20,6 @@ export function TooltipProvider({ children }: { children: ReactNode }) {
   const {
     refs,
     floatingStyles,
-    context,
     middlewareData: { arrow: { x: arrowX, y: arrowY } = {} },
   } = useFloating({
     open: isOpen,
