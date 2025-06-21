@@ -592,6 +592,31 @@ html:not(.dark) .img-dark {
   display: none;
 }
 
+.img-border {
+  border-width: 1px;
+}
+.img-border-bg {
+  border-width: 1px;
+  background-color: #f5faff;
+}
+.img-bg {
+  background-color: #f5faff;
+}
+
+.dark .img-border {
+  border-width: 1px;
+  border-color: #333;
+}
+.dark .img-border-bg {
+  border-width: 1px;
+  border-color: #333;
+  background: #18181c;
+}
+
+.dark .img-bg {
+  background-color: #18181c;
+}
+
 /* ::vedio */
 .rds-video {
   z-index: 150;
@@ -614,7 +639,8 @@ html:not(.dark) .img-dark {
   border-radius: 0;
   margin: 0 0;
   margin-right: 0.3em;
-  margin-bottom: 0.1em;
+  margin-left: 0.2em;
+  margin-bottom: 0.3em;
 }
 
 /* :badge */

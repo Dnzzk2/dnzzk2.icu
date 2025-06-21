@@ -9,7 +9,7 @@
 /* 主题变量 */
 @theme {
   /* 字体 */
-  --font-serif: var(--font-lexend);
+  --font-serif: var(--font-sans);
   --font-mono: var(--font-dm-mono);
 
   /* 基础颜色 */

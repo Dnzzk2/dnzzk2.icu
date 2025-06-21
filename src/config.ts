@@ -210,7 +210,7 @@ export const ProjectList: Project[] = [
     website: 'https://litos.vercel.app/',
     type: 'image',
     icon: '/projects/litos.png',
-    star: 11,
+    star: 12,
     fork: 4,
   },
 ]
