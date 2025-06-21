@@ -78,7 +78,7 @@ nvm install node
 
 目录都在放 `/var/www` 中，你可以用自己的目录替代，以下都以此目录为基准。
 
-```
+```txt title="目录结构"
 www
 ├── project
 ├── webhooks
