@@ -252,7 +252,7 @@ server {
 }
 ```
 
-### 设置Webhook
+### 设置 Webhooks
 
 :::image-figure[webhooks]
 ![github-dark](../../assets/images/webhook/github-dark.png)(class:img-dark img-border)
