@@ -45,7 +45,7 @@ export const SOCIAL_LINKS: SocialLink[] = [
     name: 'github',
     url: 'https://github.com/Dnzzk2',
     icon: 'icon-[ri--github-fill]',
-    count: 10,
+    count: 12,
   },
   {
     name: 'qq',
@@ -210,7 +210,7 @@ export const ProjectList: Project[] = [
     website: 'https://litos.vercel.app/',
     type: 'image',
     icon: '/projects/litos.png',
-    star: 14,
+    star: 15,
     fork: 4,
   },
 ]
