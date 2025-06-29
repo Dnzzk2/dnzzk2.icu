@@ -19,10 +19,11 @@ const duplicateSkills = (skills: Skill[]) => [...skills, ...skills, ...skills, .
         <div class="relative w-full overflow-hidden my-4 group">
           <div
             class={cn(
-              'flex w-max',
+              'flex w-max will-change-transform',
               row.direction === 'right' ? 'animate-[scroll-reverse_30s_linear_infinite]' : 'animate-[scroll_30s_linear_infinite]',
               'group-hover:[animation-play-state:paused]'
             )}
+            style="transform: translateZ(0); -webkit-transform: translateZ(0);"
           >
             {duplicatedSkills.map((skill) => (
               <div class="group flex items-center gap-2 px-5 py-2 mx-2 rounded-full border border-border bg-accent text-foreground whitespace-nowrap hover:bg-tag-bg-hover dark:shadow-md">
@@ -40,21 +41,59 @@ const duplicateSkills = (skills: Skill[]) => [...skills, ...skills, ...skills, .
 </div>
 
 <style is:global>
-  @keyframes scroll {
+  /* Safari/WebKit 兼容性修复 */
+  @-webkit-keyframes scroll {
     0% {
-      transform: translateX(0);
+      -webkit-transform: translate3d(0, 0, 0);
+      transform: translate3d(0, 0, 0);
     }
     100% {
-      transform: translateX(-25%);
+      -webkit-transform: translate3d(-25%, 0, 0);
+      transform: translate3d(-25%, 0, 0);
     }
   }
-  @keyframes scroll-reverse {
+
+  @keyframes scroll {
     0% {
-      transform: translateX(-25%);
+      -webkit-transform: translate3d(0, 0, 0);
+      transform: translate3d(0, 0, 0);
     }
     100% {
-      transform: translateX(0);
+      -webkit-transform: translate3d(-25%, 0, 0);
+      transform: translate3d(-25%, 0, 0);
     }
+  }
+
+  @-webkit-keyframes scroll-reverse {
+    0% {
+      -webkit-transform: translate3d(-25%, 0, 0);
+      transform: translate3d(-25%, 0, 0);
+    }
+    100% {
+      -webkit-transform: translate3d(0, 0, 0);
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes scroll-reverse {
+    0% {
+      -webkit-transform: translate3d(-25%, 0, 0);
+      transform: translate3d(-25%, 0, 0);
+    }
+    100% {
+      -webkit-transform: translate3d(0, 0, 0);
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  /* Safari 优化 */
+  .flex.w-max.will-change-transform {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-perspective: 1000px;
+    perspective: 1000px;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
   }
 </style>
 <script>
