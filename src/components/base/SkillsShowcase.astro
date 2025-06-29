@@ -8,7 +8,7 @@ interface Props {
 
 const { skillsData }: Props = Astro.props
 
-const duplicateSkills = (skills: Skill[]) => [...skills, ...skills, ...skills]
+const duplicateSkills = (skills: Skill[]) => [...skills, ...skills, ...skills, ...skills]
 ---
 
 <div class="relative py-2 px-2 max-md:px-0">
@@ -20,7 +20,7 @@ const duplicateSkills = (skills: Skill[]) => [...skills, ...skills, ...skills]
           <div
             class={cn(
               'flex w-max',
-              row.direction === 'right' ? 'animate-[scroll-reverse_20s_linear_infinite]' : 'animate-[scroll_20s_linear_infinite]',
+              row.direction === 'right' ? 'animate-[scroll-reverse_30s_linear_infinite]' : 'animate-[scroll_30s_linear_infinite]',
               'group-hover:[animation-play-state:paused]'
             )}
           >
@@ -45,12 +45,12 @@ const duplicateSkills = (skills: Skill[]) => [...skills, ...skills, ...skills]
       transform: translateX(0);
     }
     100% {
-      transform: translateX(-33.33333%);
+      transform: translateX(-25%);
     }
   }
   @keyframes scroll-reverse {
     0% {
-      transform: translateX(-33.33333%);
+      transform: translateX(-25%);
     }
     100% {
       transform: translateX(0);
@@ -62,8 +62,8 @@ const duplicateSkills = (skills: Skill[]) => [...skills, ...skills, ...skills]
   function adjustAnimationSpeed() {
     const tracks = document.querySelectorAll<HTMLElement>('.flex.w-max')
     const screenWidth = window.innerWidth
-    const baseSpeed = 20
-    const speedFactor = Math.max(0.5, Math.min(1.5, screenWidth / 1000))
+    const baseSpeed = 30
+    const speedFactor = Math.max(0.6, Math.min(1.8, screenWidth / 1000))
     const newDuration = `${baseSpeed * speedFactor}s`
 
     tracks.forEach((track) => {
