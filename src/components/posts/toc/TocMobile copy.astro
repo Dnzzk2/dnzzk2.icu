@@ -1,0 +1,266 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import type { MarkdownHeading } from 'astro'
+import SimpleProgressRing from './SimpleProgressRing.astro'
+
+interface Props {
+  post: CollectionEntry<'posts'>
+  posts: CollectionEntry<'posts'>[]
+  headings: MarkdownHeading[]
+}
+
+const { post, posts, headings } = Astro.props
+const hasHeadings = headings.length > 0
+
+// 过滤并处理标题
+const filteredHeadings = headings.reduce((acc, heading) => {
+  if (heading.depth <= 4 && heading.text.trim()) {
+    acc.push({
+      ...heading,
+      text: heading.text.replace(/\s*[Hh][1-6]$/g, ''),
+    })
+  }
+  return acc
+}, [] as MarkdownHeading[])
+---
+
+{
+  hasHeadings && (
+    <div class="lg:hidden sticky top-0 z-40 md:bg-transparent bg-background/80 backdrop-blur-sm" data-toc-mobile-container>
+      <div
+        class="px-6 sm:px-8 py-3 border-b border-border/60 flex items-center justify-between cursor-pointer select-none"
+        data-toc-mobile-trigger
+      >
+        <div class="flex items-center gap-2">
+          <SimpleProgressRing size={16} strokeWidth={2} />
+          <span class="text-sm font-medium text-foreground/80">目录</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span
+            class="icon-[ph--caret-down] w-4 h-4 text-primary/70 transition-transform duration-200"
+            data-toc-arrow
+            style="transform: rotate(0deg);"
+          />
+        </div>
+      </div>
+      <div class="overflow-hidden border-b border-border/30" data-toc-content style="max-height: 0; transition: max-height 300ms ease-out;">
+        <div class="max-h-[40vh] overflow-y-auto no-scrollbar">
+          <div class="px-6 sm:px-8 py-4">
+            <div class="space-y-2">
+              {filteredHeadings.map((heading, index) => {
+                const indentClass =
+                  {
+                    2: '',
+                    3: 'ml-3',
+                    4: 'ml-6',
+                  }[heading.depth] || ''
+
+                return (
+                  <div class={`flex items-start gap-2 ${indentClass}`} data-toc-item={heading.slug}>
+                    <span class="text-primary/40 font-mono text-xs mt-1 min-w-[1.5rem] transition-colors duration-200" data-toc-number>
+                      {(index + 1).toString().padStart(2, '0')}
+                    </span>
+                    <a
+                      href={`#${heading.slug}`}
+                      class="text-sm text-foreground/70 hover:text-primary hover:underline transition-colors duration-200 leading-relaxed"
+                      data-toc-link
+                    >
+                      {heading.text}
+                    </a>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+<script>
+  /**
+   * 移动端目录展开/收起功能
+   */
+  function setupMobileTocToggle() {
+    const tocContainer = document.querySelector('[data-toc-mobile-container]') as HTMLElement
+    const tocTrigger = document.querySelector('[data-toc-mobile-trigger]') as HTMLElement
+    const tocContent = document.querySelector('[data-toc-content]') as HTMLElement
+    const tocArrow = document.querySelector('[data-toc-arrow]') as HTMLElement
+    const tocLinks = document.querySelectorAll('[data-toc-link]')
+    const tocNumbers = document.querySelectorAll('[data-toc-number]')
+
+    if (!tocContainer || !tocTrigger || !tocContent || !tocArrow) return
+
+    let isExpanded = false
+    let currentActiveHeading = ''
+
+    const headingElements = Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6'))
+      .filter((el) => el.id)
+      .map((el) => ({
+        element: el as HTMLElement,
+        id: el.id,
+        top: 0,
+      }))
+
+    const updateHeadingPositions = () => {
+      const tocHeaderHeight = tocTrigger.offsetHeight
+      headingElements.forEach((heading) => {
+        heading.top = heading.element.offsetTop - tocHeaderHeight - 32
+      })
+    }
+
+    const updateActiveHeading = () => {
+      const scrollTop = window.scrollY
+      let activeHeading = ''
+
+      for (let i = headingElements.length - 1; i >= 0; i--) {
+        if (scrollTop >= headingElements[i].top) {
+          activeHeading = headingElements[i].id
+          break
+        }
+      }
+
+      if (activeHeading !== currentActiveHeading) {
+        currentActiveHeading = activeHeading
+
+        tocNumbers.forEach((number) => {
+          number.classList.remove('text-primary', 'font-semibold')
+          number.classList.add('text-primary/40')
+        })
+
+        if (activeHeading) {
+          const activeItem = document.querySelector(`[data-toc-item="${activeHeading}"]`)
+          if (activeItem) {
+            const activeNumber = activeItem.querySelector('[data-toc-number]')
+            if (activeNumber) {
+              activeNumber.classList.remove('text-primary/40')
+              activeNumber.classList.add('text-primary', 'font-semibold')
+            }
+          }
+        }
+      }
+    }
+
+    const toggleToc = (forceClose = false) => {
+      if (forceClose) {
+        isExpanded = true
+      }
+      isExpanded = !isExpanded
+
+      if (isExpanded) {
+        const scrollContainer = tocContent.querySelector('.max-h-\\[40vh\\]') as HTMLElement
+        const actualHeight = scrollContainer?.scrollHeight || tocContent.scrollHeight
+        const maxHeight = Math.min(actualHeight, window.innerHeight * 0.4)
+        tocContent.style.maxHeight = `${maxHeight}px`
+        tocArrow.style.transform = 'rotate(180deg)'
+      } else {
+        tocContent.style.maxHeight = '0'
+        tocArrow.style.transform = 'rotate(0deg)'
+      }
+    }
+
+    const shouldIgnoreClick = (target: HTMLElement): boolean => {
+      if (target.tagName === 'IMG') return true
+      if (target.tagName === 'PICTURE') return true
+      if (target.closest('picture')) return true
+      if (target.hasAttribute('data-zoom') || target.closest('[data-zoom]')) return true
+      if (target.classList.contains('zoom-image') || target.closest('.zoom-image')) return true
+      if (target.classList.contains('medium-zoom-image') || target.closest('.medium-zoom-image')) return true
+      if (target.classList.contains('medium-zoom-overlay') || target.closest('.medium-zoom-overlay')) return true
+      if (target.closest('.prose img') || target.closest('.markdown img')) return true
+      if (target.closest('header') || target.closest('#header')) return true
+      if (target.closest('footer') || target.closest('#footer')) return true
+      return false
+    }
+
+    let scrollTimeout: number
+    const throttledUpdate = () => {
+      if (scrollTimeout) {
+        cancelAnimationFrame(scrollTimeout)
+      }
+      scrollTimeout = requestAnimationFrame(() => {
+        updateActiveHeading()
+      })
+    }
+
+    const init = () => {
+      updateHeadingPositions()
+      updateActiveHeading()
+    }
+
+    setTimeout(init, 100)
+
+    window.addEventListener('scroll', throttledUpdate, { passive: true })
+    window.addEventListener('resize', () => {
+      init()
+      if (isExpanded) {
+        toggleToc(true)
+      }
+    })
+
+    tocTrigger.addEventListener('click', (e) => {
+      e.stopPropagation()
+      toggleToc()
+    })
+
+    tocContent.addEventListener('click', (e) => {
+      e.stopPropagation()
+    })
+
+    document.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement
+      if (shouldIgnoreClick(target)) {
+        return
+      }
+      if (isExpanded && !tocContainer.contains(target)) {
+        toggleToc(true)
+      }
+    })
+
+    tocLinks.forEach((link) => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        const href = link.getAttribute('href')
+        if (href) {
+          const target = document.querySelector(href)
+          if (target) {
+            if (isExpanded) {
+              toggleToc(true)
+            }
+
+            setTimeout(() => {
+              const tocHeaderHeight = tocTrigger.offsetHeight
+              const targetTop = (target as HTMLElement).offsetTop
+              const scrollToPosition = Math.max(0, targetTop - tocHeaderHeight - 16)
+
+              window.scrollTo(0, scrollToPosition)
+              history.pushState(null, '', href)
+
+              setTimeout(() => {
+                updateHeadingPositions()
+                updateActiveHeading()
+              }, 100)
+            }, 300)
+          }
+        }
+      })
+    })
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isExpanded) {
+        toggleToc(true)
+      }
+    })
+
+    return () => {
+      window.removeEventListener('scroll', throttledUpdate)
+      if (scrollTimeout) {
+        cancelAnimationFrame(scrollTimeout)
+      }
+    }
+  }
+
+  document.addEventListener('astro:page-load', setupMobileTocToggle)
+</script>
