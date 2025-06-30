@@ -31,13 +31,13 @@ const filteredHeadings = headings.reduce((acc, heading) => {
         class="relative md:bg-transparent bg-background/95 backdrop-blur-sm border-b border-border/60 px-6 sm:px-8 py-3 flex items-center justify-between cursor-pointer select-none"
         data-toc-mobile-trigger
       >
-        <div class="flex gap-4 items-center">
-          <SimpleProgressRing size={16} strokeWidth={2} />
-          <div class="text-sm font-medium text-foreground/80 " data-current-heading>
+        <div class="flex gap-4 items-center min-w-0 flex-1">
+          <SimpleProgressRing size={16} strokeWidth={2} class="flex-shrink-0" />
+          <div class="text-sm font-medium text-foreground/80 truncate" data-current-heading>
             目录
           </div>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 pl-2">
           <span
             class="icon-[ph--caret-down] w-4 h-4 text-primary/70 transition-transform duration-200"
             data-toc-arrow
@@ -46,7 +46,7 @@ const filteredHeadings = headings.reduce((acc, heading) => {
         </div>
       </div>
 
-              <div
+      <div
           class="md:bg-transparent bg-background/98 backdrop-blur-sm border-b border-border/30  overflow-hidden"
           data-toc-content
           style="height: 0; transition: height 300ms ease-out, box-shadow 300ms ease-out;"
@@ -67,29 +67,29 @@ const filteredHeadings = headings.reduce((acc, heading) => {
             <div class="max-h-[30vh] overflow-y-auto no-scrollbar" data-scroll-container>
               <div class="px-6 sm:px-8 py-2">
                 <div class="space-y-2 ">
-              {filteredHeadings.map((heading, index) => {
-                const indentClass =
-                  {
-                    2: '',
-                    3: 'ml-3',
-                    4: 'ml-6',
-                  }[heading.depth] || ''
+                    {filteredHeadings.map((heading, index) => {
+                      const indentClass =
+                        {
+                          2: '',
+                          3: 'ml-3',
+                          4: 'ml-6',
+                        }[heading.depth] || ''
 
-                return (
-                  <div class={`flex items-start gap-2 ${indentClass}`} data-toc-item={heading.slug}>
-                    <span class="text-primary/40 font-mono text-xs mt-1 min-w-[1.5rem] transition-colors duration-200" data-toc-number>
-                      {(index + 1).toString().padStart(2, '0')}
-                    </span>
-                    <a
-                      href={`#${heading.slug}`}
-                      class="text-sm text-foreground/70 hover:text-primary hover:underline transition-colors duration-200 leading-relaxed"
-                      data-toc-link
-                    >
-                      {heading.text}
-                    </a>
-                  </div>
-                )
-                              })}
+                      return (
+                        <div class={`flex items-start gap-2 min-w-0 ${indentClass}`} data-toc-item={heading.slug}>
+                          <span class="text-primary/40 font-mono text-xs mt-1 min-w-[1.5rem] transition-colors duration-200 flex-shrink-0" data-toc-number>
+                            {(index + 1).toString().padStart(2, '0')}
+                          </span>
+                          <a
+                            href={`#${heading.slug}`}
+                            class="text-sm text-foreground/70 hover:text-primary hover:underline transition-colors duration-200 leading-relaxed truncate"
+                            data-toc-link
+                          >
+                            {heading.text}12321321312313123213123123123123123
+                          </a>
+                        </div>
+                      )
+                    })}
                 </div>
               </div>
             </div>
