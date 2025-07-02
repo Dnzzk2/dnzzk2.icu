@@ -47,13 +47,6 @@
     font-display: swap;
   }
 
-  /* 中文字体 */
-  /* @font-face {
-    font-family: 'ShangguSansSC-VF';
-    src: url('/fonts/ShangguSansSC-VF/result.css') format('woff2');
-    font-display: swap;
-  } */
-
   /* 英文字体 */
   @font-face {
     font-family: 'Onest';
