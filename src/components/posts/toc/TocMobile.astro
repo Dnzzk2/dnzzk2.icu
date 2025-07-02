@@ -2,6 +2,8 @@
 import type { CollectionEntry } from 'astro:content'
 import type { MarkdownHeading } from 'astro'
 import SimpleProgressRing from './SimpleProgressRing.astro'
+import { filterHeadings } from '~/lib/toc'
+import { cn } from '~/lib/utils'
 
 interface Props {
   post: CollectionEntry<'posts'>
@@ -9,17 +11,16 @@ interface Props {
   headings: MarkdownHeading[]
 }
 
-const { post, posts, headings } = Astro.props
+const { headings } = Astro.props
 const hasHeadings = headings.length > 0
 
-// 过滤并处理标题
-const filteredHeadings = headings
-  .filter((h) => h.depth <= 4 && h.text.trim())
-  .map((h, index) => ({
-    ...h,
-    text: h.text.replace(/\s*[Hh][1-6]$/g, ''),
-    order: index + 1,
-  }))
+const filteredHeadings = filterHeadings(headings)
+
+const indentClass = new Map([
+  [2, ''],
+  [3, 'ml-3'],
+  [4, 'ml-6'],
+])
 ---
 
 {
@@ -58,15 +59,8 @@ const filteredHeadings = headings
             <div class="max-h-[30vh] overflow-y-auto no-scrollbar" data-toc-scroll-area>
               <ul class="px-6 sm:px-8 py-2 space-y-2" id="mobile-table-of-contents">
                 {filteredHeadings.map((heading) => {
-                  const indentClass =
-                    {
-                      2: '',
-                      3: 'ml-3',
-                      4: 'ml-6',
-                    }[heading.depth] || ''
-
                   return (
-                    <li class={`flex items-start gap-2 min-w-0 ${indentClass}`}>
+                    <li class={cn('flex items-start gap-2 min-w-0', indentClass.get(heading.depth) || '')}>
                       <span
                         class="text-primary/40 font-mono text-xs mt-1 min-w-[1.5rem] transition-colors duration-200 flex-shrink-0 mobile-toc-number"
                         data-order={heading.order}
@@ -125,8 +119,8 @@ const filteredHeadings = headings
 
   class HeadingRegions {
     static build(): void {
-      // 获取所有标题，排除脚注
-      state.headings = Array.from(document.querySelectorAll<HTMLElement>('h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]')).filter(
+      // 获取标题，排除脚注
+      state.headings = Array.from(document.querySelectorAll<HTMLElement>('h1[id], h2[id], h3[id], h4[id]')).filter(
         (heading) => heading.id !== 'footnote-label'
       )
 
