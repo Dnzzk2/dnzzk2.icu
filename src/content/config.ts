@@ -1,25 +1,25 @@
 import { defineCollection, z } from 'astro:content'
 
 import { POSTS_CONFIG } from '~/config'
-import type { HeroImageAspectRatio, HeroImageLayout } from '~/types'
+import type { PostLayout, ImageRatio } from '~/types'
 
 const posts = defineCollection({
   type: 'content',
   schema: z.object({
-    // 随笔标题（必需）
+    // 文章标题（必需）
     title: z.string(),
-    // 随笔描述（可选）
+    // 文章描述（可选）
     description: z.string(),
     // 发布日期（必需）
     pubDate: z.date(),
     // 更新日期（可选）
     updatedDate: z.date().optional(),
-    // 是否推荐随笔，默认为 false
+    // 是否推荐，默认为 false
     recommend: z.boolean().default(false),
-    // 随笔作者，默认使用全局配置中的作者
+    // 作者，默认使用全局配置
     author: z.string().default(POSTS_CONFIG.author),
-    // 随笔封面图（可选）
-    heroImage: z
+    // 封面图（可选）
+    image: z
       .string()
       .transform((val) => {
         if (!val) return undefined
@@ -34,11 +34,11 @@ const posts = defineCollection({
         return val.startsWith('http') ? val : `/og-images/${val}`
       })
       .optional(),
-    // 封面图布局方式（可选）
-    heroImageLayout: z.custom<HeroImageLayout>().optional(),
-    // 封面图宽高比，默认使用全局配置
-    heroImageAspectRatio: z.custom<HeroImageAspectRatio>().default(POSTS_CONFIG.defaultHeroImageAspectRatio),
-    // 随笔标签列表
+    // 布局类型（可选，默认根据是否有图片自动选择）
+    layout: z.custom<PostLayout>().optional(),
+    // 图片宽高比，默认使用全局配置
+    imageRatio: z.custom<ImageRatio>().default(POSTS_CONFIG.defaultImageRatio),
+    // 标签列表
     tags: z.array(z.string()),
   }),
 })

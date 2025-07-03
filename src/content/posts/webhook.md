@@ -2,8 +2,9 @@
 title: '使用Webhook实现自动更新项目'
 description: '在Ubuntu中，使用Webhook实现自动拉取代码，下载依赖，项目构建。'
 pubDate: 2025-06-18
-author: 'Webhook'
-recommend: false
+author: 'Dnzzk2'
+recommend: true
+layout: jap
 tags: ['Webhook', 'Ubuntu']
 ---
 

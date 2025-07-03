@@ -49,25 +49,45 @@ export interface PostCardPageConfig {
 }
 
 /**
- * 随笔配置接口 / Post configuration interface
- * @description 用于配置博客随笔相关的全局设置 / Used to configure global settings for blog posts
- * @property {string} title - 随笔标题 / Post title
- * @property {string} description - 随笔描述 / Post description
- * @property {string} introduce - 随笔介绍 / Post introduce
- * @property {string} author - 作者名称 / Author name
- * @property {PostCardPageConfig} homePageConfig - 首页随笔展示配置 / Home page posts display configuration
- * @property {PostCardPageConfig} postPageConfig - 随笔列表页展示配置 / Posts list page display configuration
- * @property {PostCardPageConfig} tagsPageConfig - 标签页随笔展示配置 / Post display configuration for tags page
- * @property {string} defaultHeroImage - 默认随笔封面图 / Default hero image for posts
- * @property {HeroImageAspectRatio} defaultHeroImageAspectRatio - 默认图片宽高比 / Default image aspect ratio
- * @property {boolean} imageDarkenInDark - 是否在暗黑模式下对图片进行暗化处理 / Whether to darken images in dark mode
+ * 文章布局类型 / Post layout types
+ * @description 文章页面的布局样式
+ * - minimal: 极简布局，适合纯文本内容，居中对齐
+ * - left: 左对齐布局，适合纯文本内容，左对齐排版
+ * - card: 卡片布局，图文并茂的标准样式
+ * - split: 分屏布局，左右分栏显示
+ */
+export type PostLayout = 'minimal' | 'jap' | 'card' | 'split'
+
+/**
+ * 简化的图片宽高比类型 / Simplified image aspect ratio types
+ * @description 文章封面图的宽高比
+ * - 16/9: 宽屏比例，适合横向风景图
+ * - 4/3: 标准比例，适合一般内容图
+ * - 3/4: 竖屏比例，适合人像或海报
+ */
+export type ImageRatio = '16/9' | '4/3' | '3/4'
+
+/**
+ * 简化的文章配置接口 / Simplified post configuration interface
+ * @description 全局文章相关配置 / Global post-related configuration
+ * @property {string} title - 站点标题 / Site title
+ * @property {string} description - 站点描述 / Site description
+ * @property {string} introduce - 站点介绍语 / Site introduction
+ * @property {string} author - 默认作者 / Default author
+ * @property {PostCardPageConfig} homePageConfig - 首页文章展示配置 / Home page posts display configuration
+ * @property {PostCardPageConfig} postPageConfig - 文章列表页展示配置 / Posts list page display configuration
+ * @property {PostCardPageConfig} tagsPageConfig - 标签页文章展示配置 / Tags page posts display configuration
+ * @property {string} defaultImage - 默认封面图 / Default cover image
+ * @property {ImageRatio} defaultImageRatio - 默认图片宽高比 / Default image aspect ratio
+ * @property {PostLayout} defaultLayout - 默认文章布局 / Default post layout
+ * @property {boolean} imageDarkenInDark - 暗色模式下是否对图片进行暗化处理 / Whether to darken images in dark mode
  * @property {string} readMoreText - "阅读更多"按钮文本 / "Read more" button text
  * @property {string} prevPageText - 上一页按钮文本 / Previous page button text
  * @property {string} nextPageText - 下一页按钮文本 / Next page button text
- * @property {string} tocText - 目录文本 / Table of contents text
- * @property {string} backToPostsText - 返回随笔列表按钮文本 / Back to posts list button text
- * @property {string} nextPostText - 下一篇随笔按钮文本 / Next post button text
- * @property {string} prevPostText - 上一篇随笔按钮文本 / Previous post button text
+ * @property {string} tocText - 目录标题文本 / Table of contents title text
+ * @property {string} backToPostsText - 返回文章列表按钮文本 / Back to posts list button text
+ * @property {string} nextPostText - 下一篇文章按钮文本 / Next post button text
+ * @property {string} prevPostText - 上一篇文章按钮文本 / Previous post button text
  */
 export interface PostConfig {
   title: string
@@ -77,8 +97,9 @@ export interface PostConfig {
   homePageConfig: PostCardPageConfig
   postPageConfig: PostCardPageConfig
   tagsPageConfig: PostCardPageConfig
-  defaultHeroImage: string
-  defaultHeroImageAspectRatio: HeroImageAspectRatio
+  defaultImage: string
+  defaultImageRatio: ImageRatio
+  defaultLayout: PostLayout
   imageDarkenInDark: boolean
   readMoreText: string
   prevPageText: string

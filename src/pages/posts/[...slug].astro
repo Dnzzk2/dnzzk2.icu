@@ -1,10 +1,11 @@
 ---
 import { getCollection } from 'astro:content'
-import { postsSort } from '~/lib/utils'
+import { postsSort, getPostLayout } from '~/lib/utils'
 import Layout from '~/layouts/Layout.astro'
-import NoImage from '~/components/posts/layouts/NoImage.astro'
-import Horizontal from '~/components/posts/layouts/Horizontal.astro'
-import Vertical from '~/components/posts/layouts/Vertical.astro'
+import Minimal from '~/components/posts/layouts/Minimal.astro'
+import Jap from '~/components/posts/layouts/Jap.astro'
+import Card from '~/components/posts/layouts/Card.astro'
+import Split from '~/components/posts/layouts/Split.astro'
 import PostNavigation from '~/components/posts/base/PostNavigation.astro'
 import PostFeatures from '~/components/posts/toc/PostFeatures.astro'
 import TocMobile from '~/components/posts/toc/TocMobile.astro'
@@ -31,16 +32,17 @@ const { Content, headings, remarkPluginFrontmatter } = await post.render()
 const filterHeadings = headings.filter((heading) => heading.slug !== 'footnote-label')
 
 const hasValidHeadings = filterHeadings.length > 1
-const hasImage = !!frontmatter.heroImage
-const isVertical = frontmatter.heroImageAspectRatio === '3/4'
-const layoutMap = {
-  'no-image': NoImage,
-  'vertical': Vertical,
-  'horizontal': Horizontal,
+
+// 使用新的布局选择系统
+const selectedLayout = getPostLayout(frontmatter)
+const layoutComponents = {
+  minimal: Minimal,
+  jap: Jap,
+  card: Card,
+  split: Split,
 }
 
-const layoutKey = !hasImage ? 'no-image' : isVertical ? 'vertical' : 'horizontal'
-const PostLayout = layoutMap[layoutKey]
+const PostLayout = layoutComponents[selectedLayout]
 ---
 
 <Layout title={frontmatter.title} description={frontmatter.description || frontmatter.title} image={frontmatter.ogImage}>
