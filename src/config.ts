@@ -179,7 +179,7 @@ export const POSTS_CONFIG: PostConfig = {
   },
   defaultImage: '/og-image.jpg',
   defaultImageRatio: '16/9',
-  defaultLayout: 'minimal',
+  defaultPostType: 'minimal',
   imageDarkenInDark: true,
   readMoreText: '阅读更多',
   prevPageText: '上一页',

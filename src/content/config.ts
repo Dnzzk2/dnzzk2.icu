@@ -1,7 +1,7 @@
 import { defineCollection, z } from 'astro:content'
 
 import { POSTS_CONFIG } from '~/config'
-import type { PostLayout, ImageRatio } from '~/types'
+import type { PostType, ImageRatio, ListImageLayout } from '~/types'
 
 const posts = defineCollection({
   type: 'content',
@@ -35,9 +35,11 @@ const posts = defineCollection({
       })
       .optional(),
     // 布局类型（可选，默认根据是否有图片自动选择）
-    layout: z.custom<PostLayout>().optional(),
+    postType: z.custom<PostType>().optional(),
     // 图片宽高比，默认使用全局配置
     imageRatio: z.custom<ImageRatio>().default(POSTS_CONFIG.defaultImageRatio),
+    // 封面图布局方式（可选）
+    listImageLayout: z.custom<ListImageLayout>().optional(),
     // 标签列表
     tags: z.array(z.string()),
   }),

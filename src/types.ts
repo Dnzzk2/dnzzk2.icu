@@ -18,16 +18,10 @@ export type Site = {
 }
 
 /**
- * 随笔封面图宽高比类型 / Hero image aspect ratio type
- * @description 可选值为 '16/9' 和 '3/4' / Possible values: '16/9' and '3/4'
- */
-export type HeroImageAspectRatio = '16/9' | '3/4'
-
-/**
- * 随笔封面图布局类型 / Hero image layout type
+ * 随笔封面图在列表中的布局类型 / Hero image layout type
  * @description 可选值为 'left' 和 'right' / Possible values: 'left' and 'right'
  */
-export type HeroImageLayout = 'left' | 'right'
+export type ListImageLayout = 'left' | 'right'
 
 /**
  * 随笔卡片类型 / PostCardType
@@ -40,12 +34,12 @@ export type PostCardType = 'compact' | 'image' | 'time-line'
  * @description 用于配置随笔卡片页面的显示方式 / Used to configure how post cards are displayed on pages
  * @property {PostCardType} type - 卡片展示类型 / Card display type
  * @property {number} size - 每页显示数量 / Number of items per page
- * @property {HeroImageLayout} heroImageLayout - 特色图片布局方式 / Hero image layout position
+ * @property {ListImageLayout} listImageLayout - 特色图片布局方式 / Hero image layout position
  */
 export interface PostCardPageConfig {
   type: PostCardType
   size: number
-  heroImageLayout?: HeroImageLayout
+  listImageLayout?: ListImageLayout
 }
 
 /**
@@ -56,7 +50,7 @@ export interface PostCardPageConfig {
  * - card: 卡片布局，图文并茂的标准样式
  * - split: 分屏布局，左右分栏显示
  */
-export type PostLayout = 'minimal' | 'jap' | 'card' | 'split'
+export type PostType = 'minimal' | 'jap' | 'card' | 'split'
 
 /**
  * 简化的图片宽高比类型 / Simplified image aspect ratio types
@@ -79,7 +73,7 @@ export type ImageRatio = '16/9' | '4/3' | '3/4'
  * @property {PostCardPageConfig} tagsPageConfig - 标签页文章展示配置 / Tags page posts display configuration
  * @property {string} defaultImage - 默认封面图 / Default cover image
  * @property {ImageRatio} defaultImageRatio - 默认图片宽高比 / Default image aspect ratio
- * @property {PostLayout} defaultLayout - 默认文章布局 / Default post layout
+ * @property {PostType} defaultPostType - 文章顶部元信息类型 / Default post type
  * @property {boolean} imageDarkenInDark - 暗色模式下是否对图片进行暗化处理 / Whether to darken images in dark mode
  * @property {string} readMoreText - "阅读更多"按钮文本 / "Read more" button text
  * @property {string} prevPageText - 上一页按钮文本 / Previous page button text
@@ -99,7 +93,7 @@ export interface PostConfig {
   tagsPageConfig: PostCardPageConfig
   defaultImage: string
   defaultImageRatio: ImageRatio
-  defaultLayout: PostLayout
+  defaultPostType: PostType
   imageDarkenInDark: boolean
   readMoreText: string
   prevPageText: string

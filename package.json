@@ -1,10 +1,11 @@
 {
   "name": "dnzzk2.icu",
   "type": "module",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "scripts": {
     "dev": "astro dev",
     "build": "astro check && astro build",
+    "check": "astro check",
     "preview": "astro preview",
     "astro": "astro",
     "optimize": "tsx scripts/optimize-images.ts",

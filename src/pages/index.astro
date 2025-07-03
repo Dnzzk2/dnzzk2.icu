@@ -79,6 +79,6 @@ const posts = postsSort(allPosts).slice(0, size)
     <p class="text-muted-foreground mb-6 mt-1">
       最近的 {posts.length} 篇随笔，感兴趣可以看看
     </p>
-    <List {posts} {type} heroImageLayout={POSTS_CONFIG.homePageConfig?.heroImageLayout} />
+    <List {posts} {type} listImageLayout={POSTS_CONFIG.homePageConfig?.listImageLayout} />
   </div>
 </Layout>

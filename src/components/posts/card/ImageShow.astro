@@ -1,5 +1,5 @@
 ---
-import type { HeroImageAspectRatio } from '~/types'
+import type { ImageRatio } from '~/types'
 import { formatDate } from '~/lib/utils'
 import { POSTS_CONFIG } from '~/config'
 import PostTag from '~/components/posts/base/PostTag.astro'
@@ -8,26 +8,27 @@ import type { CardProps } from './List.astro'
 
 interface Props extends CardProps {}
 
-const { post, index, heroImageLayout }: Props = Astro.props
+const { post, index, listImageLayout }: Props = Astro.props
 
-const aspectRatioClass: Record<HeroImageAspectRatio, string> = {
+const aspectRatioClass: Record<ImageRatio, string> = {
   '16/9': 'aspect-[16/9]',
+  '4/3': 'aspect-[4/3]',
   '3/4': 'aspect-[3/4]',
 }
 
-const isVertical = post.data.heroImageAspectRatio === '3/4'
-const imagePosition = post.data.heroImageLayout || heroImageLayout || (index % 2 === 1 ? 'right' : 'left')
+const isVertical = post.data.imageRatio === '3/4'
+const imagePosition = post.data.listImageLayout || listImageLayout || (index % 2 === 1 ? 'right' : 'left')
 const isReverse = imagePosition === 'right'
-const defaultHeroImage = POSTS_CONFIG.defaultHeroImage
+const defaultImage = POSTS_CONFIG.defaultImage
 ---
 
 <article class={`group flex flex-col md:flex-row gap-8 ${isReverse ? 'md:flex-row-reverse' : ''}`}>
   <div class={`${isVertical ? 'md:w-1/4' : 'md:w-2/5'} flex flex-col overflow-hidden`}>
     <a href={`/posts/${post.slug}`} class="block relative">
-      <div class={`${aspectRatioClass[post.data.heroImageAspectRatio]} overflow-hidden bg-muted/30 relative`}>
+      <div class={`${aspectRatioClass[post.data.imageRatio]} overflow-hidden bg-muted/30 relative`}>
         <div class="absolute inset-0 bg-gradient-to-br from-accent to-muted/50 animate-pulse"></div>
         <img
-          src={post.data.heroImage || defaultHeroImage}
+          src={post.data.image || defaultImage}
           alt={post.data.title}
           loading="lazy"
           decoding="async"

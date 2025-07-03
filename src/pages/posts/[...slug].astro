@@ -1,6 +1,6 @@
 ---
 import { getCollection } from 'astro:content'
-import { postsSort, getPostLayout } from '~/lib/utils'
+import { postsSort, getPostType } from '~/lib/utils'
 import Layout from '~/layouts/Layout.astro'
 import Minimal from '~/components/posts/layouts/Minimal.astro'
 import Jap from '~/components/posts/layouts/Jap.astro'
@@ -34,7 +34,7 @@ const filterHeadings = headings.filter((heading) => heading.slug !== 'footnote-l
 const hasValidHeadings = filterHeadings.length > 1
 
 // 使用新的布局选择系统
-const selectedLayout = getPostLayout(frontmatter)
+const selectedLayout = getPostType(frontmatter)
 const layoutComponents = {
   minimal: Minimal,
   jap: Jap,
@@ -42,15 +42,15 @@ const layoutComponents = {
   split: Split,
 }
 
-const PostLayout = layoutComponents[selectedLayout]
+const PostType = layoutComponents[selectedLayout]
 ---
 
 <Layout title={frontmatter.title} description={frontmatter.description || frontmatter.title} image={frontmatter.ogImage}>
   <div class="relative flex flex-col justify-between h-fit">
     <TocMobile {post} {posts} headings={filterHeadings} />
-    <PostLayout {frontmatter} minutesRead={remarkPluginFrontmatter.minutesRead}>
+    <PostType {frontmatter} minutesRead={remarkPluginFrontmatter.minutesRead}>
       <Content />
-    </PostLayout>
+    </PostType>
     <div class="px-6 sm:px-8 pb-6 sm:pb-8">
       {posts.length > 1 && <PostNavigation {prev} {next} />}
     </div>
