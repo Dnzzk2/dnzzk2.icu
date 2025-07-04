@@ -6,7 +6,7 @@ export const SITE: Site = {
   website: 'https://dnzzk2.icu/',
   base: '/',
   author: 'Dnzzk2',
-  ogImage: '/og-image.jpg',
+  ogImage: 'og.png',
 }
 
 export const HEADER_LINKS: Link[] = [
@@ -177,9 +177,9 @@ export const POSTS_CONFIG: PostConfig = {
     size: 10,
     type: 'time-line',
   },
-  defaultImage: '/og-image.jpg',
+  defaultImage: 'og.png',
   defaultImageRatio: '16/9',
-  defaultPostType: 'minimal',
+  defaultPostType: 'jap',
   imageDarkenInDark: true,
   readMoreText: '阅读更多',
   prevPageText: '上一页',

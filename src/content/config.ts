@@ -34,7 +34,7 @@ const posts = defineCollection({
         return val.startsWith('http') ? val : `/og-images/${val}`
       })
       .optional(),
-    // 布局类型（可选，默认根据是否有图片自动选择）
+    // 布局类型
     postType: z.custom<PostType>().optional(),
     // 图片宽高比，默认使用全局配置
     imageRatio: z.custom<ImageRatio>().default(POSTS_CONFIG.defaultImageRatio),
