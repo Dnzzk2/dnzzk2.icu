@@ -36,12 +36,12 @@ const { frontmatter, minutesRead } = Astro.props
               {frontmatter.tags.map((tag: string) => (
                 <a
                   href={`/tags/${tag}`}
-                  class="px-3 py-2 text-xs text-center 
-                       text-muted-foreground/65 bg-muted/35 
+                  class="px-3 py-2 text-xs text-center
+                       text-muted-foreground/65 bg-muted/35
                        hover:text-muted-foreground/85 hover:bg-muted/50
                        transition-all duration-200 rounded-sm"
                 >
-                  {tag.toUpperCase()}
+                  {tag}
                 </a>
               ))}
             </div>
