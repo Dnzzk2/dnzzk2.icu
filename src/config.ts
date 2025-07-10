@@ -18,6 +18,10 @@ export const HEADER_LINKS: Link[] = [
     name: '项目',
     url: '/projects',
   },
+  {
+    name: '摄影',
+    url: '/photos',
+  },
 ]
 
 export const FOOTER_LINKS: Link[] = [
@@ -36,6 +40,10 @@ export const FOOTER_LINKS: Link[] = [
   {
     name: '标签',
     url: '/tags',
+  },
+  {
+    name: '摄影',
+    url: '/photos',
   },
 ]
 
@@ -211,7 +219,7 @@ export const ProjectList: Project[] = [
     website: 'https://litos.vercel.app/',
     type: 'image',
     icon: '/projects/litos.png',
-    star: 21,
+    star: 23,
     fork: 6,
   },
 ]
