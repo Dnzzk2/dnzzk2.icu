@@ -215,3 +215,46 @@ export interface Project {
   star?: number
   fork?: number
 }
+
+/**
+ * 图片配置接口 / Photo configuration interface
+ * @property {string} src - 图片路径 / Image path
+ * @property {string} alt - 图片描述 / Image description
+ * @property {number} width - 图片宽度 / Image width
+ * @property {number} height - 图片高度 / Image height
+ * @property {string} location - 拍摄地点 / Shooting location
+ * @property {string} date - 拍摄日期 / Shooting date
+ * @property {string} camera - 拍摄设备 / Shooting equipment
+ * @property {string} description - 图片描述 / Image description
+ */
+export interface Photo {
+  src: string
+  alt: string
+  width: number
+  height: number
+  location?: string
+  date?: string
+  camera?: string
+  description?: string
+}
+
+/**
+ * 图片页面配置接口 / Photos page configuration interface
+ * @property {string} title - 页面标题 / Page title
+ * @property {string} description - 页面描述 / Page description
+ * @property {string} introduce - 页面介绍 / Page introduction
+ */
+export interface PhotosConfig {
+  title: string
+  description: string
+  introduce: string
+}
+
+export interface PhotoData {
+  title: string
+  flag: string
+  description?: string
+  date: string
+  photos: Photo[]
+  travel?: string
+}

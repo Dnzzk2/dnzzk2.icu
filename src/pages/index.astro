@@ -36,7 +36,7 @@ const posts = postsSort(allPosts).slice(0, size)
           "随笔"，那里分享着我的成长故事、遇到的困惑以及一些个人思考。期待与你在这里相遇！
         </p>
       </div>
-      <div class="mt-6 flex gap-6">
+      <div class="mt-6 flex flex-wrap gap-4">
         {
           SOCIAL_LINKS.map((item) => {
             return <SocialLink href={item.url} icon={item.icon} aria-label={`Link of ${item.name}`} count={item.count} label="followers" />

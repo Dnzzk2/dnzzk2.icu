@@ -1,8 +1,20 @@
-import type { GithubConfig, Link, PostConfig, Project, ProjectConfig, Site, SkillsShowcaseConfig, SocialLink, TagsConfig } from '~/types'
+import type {
+  GithubConfig,
+  Link,
+  Photo,
+  PhotosConfig,
+  PostConfig,
+  Project,
+  ProjectConfig,
+  Site,
+  SkillsShowcaseConfig,
+  SocialLink,
+  TagsConfig,
+} from '~/types'
 
 export const SITE: Site = {
   title: 'Dnzzk2',
-  description: '前端开发者，UI 设计爱好者。分享技术思考与生活感悟的个人空间。',
+  description: 'Dnzzk2 的个人网站 - 前端开发者与 UI 设计爱好者，分享前端技术、设计思考、开源项目与生活感悟。探索技术之美，记录成长点滴。',
   website: 'https://dnzzk2.icu/',
   base: '/',
   author: 'Dnzzk2',
@@ -59,6 +71,11 @@ export const SOCIAL_LINKS: SocialLink[] = [
     name: 'qq',
     url: 'https://qm.qq.com/q/8lgxX5lyrC',
     icon: 'icon-[ri--qq-fill]',
+  },
+  {
+    name: 'peerList',
+    url: 'https://peerlist.io/dnzzk2',
+    icon: 'icon-[simple-icons--peerlist]',
   },
   {
     name: 'email',
@@ -170,7 +187,8 @@ export const GITHUB_CONFIG: GithubConfig = {
 
 export const POSTS_CONFIG: PostConfig = {
   title: '随笔',
-  description: '分享技术探索与生活感悟，记录编程之路上的点点滴滴。这里有前端开发、UI 设计的思考，也有游戏与摄影的日常。',
+  description:
+    'Dnzzk2 的技术随笔与生活感悟 - 前端开发经验分享、UI 设计思考、JavaScript 技术探索、React 开发心得，以及摄影与游戏的日常记录。',
   introduce: '我想，生命这卷书，落笔应是亭亭常青树。',
   author: 'Dnzzk2',
   homePageConfig: {
@@ -200,13 +218,13 @@ export const POSTS_CONFIG: PostConfig = {
 
 export const TAGS_CONFIG: TagsConfig = {
   title: '标签',
-  description: '探索不同主题的随笔合集，包含前端开发、UI 设计、摄影随笔等多个标签，助你快速找到感兴趣的内容。',
+  description: '按标签浏览 Dnzzk2 的技术文章 - 前端开发、React、JavaScript、UI 设计、摄影技巧等分类标签，快速找到您感兴趣的技术内容。',
   introduce: '通过标签快速查找相关主题的随笔，发现您感兴趣的内容。',
 }
 
 export const PROJECTS_CONFIG: ProjectConfig = {
   title: '项目',
-  description: '展示个人开源项目作品集，记录技术探索的成果，分享开发过程中的经验与思考。',
+  description: 'Dnzzk2 的开源项目作品集 - 包含 Astro 博客主题等开源项目，展示技术实践成果与开发经验分享。',
   introduce: '种下种子，静待花开。',
 }
 
@@ -220,6 +238,14 @@ export const ProjectList: Project[] = [
     type: 'image',
     icon: '/projects/litos.png',
     star: 23,
-    fork: 6,
+    fork: 5,
   },
 ]
+
+export const PHOTOS_CONFIG: PhotosConfig = {
+  title: '摄影',
+  description: 'Dnzzk2 的摄影作品集 - 记录生活中的美好瞬间，分享风景、人像、街拍等摄影作品，探索光影之美与构图技巧。',
+  introduce: '在这里我会记录一些在日常生活中拍摄的照片。',
+}
+
+export const PhotosList: Photo[] = []
