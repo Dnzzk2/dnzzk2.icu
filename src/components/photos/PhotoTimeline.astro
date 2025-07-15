@@ -1,0 +1,153 @@
+---
+import type { PhotoData, PolaroidVariant } from '~/types'
+import { cn } from '~/lib/utils'
+
+interface Props {
+  photoData: PhotoData[]
+  class?: string
+}
+
+const { photoData, class: className } = Astro.props
+
+// Polaroid variant size mapping - responsive sizes
+const polaroidVariants: Record<PolaroidVariant, string> = {
+  '1x1': 'w-24 h-24',
+  '4x5': 'w-24 h-28',
+  '4x3': 'w-24 h-20',
+  '9x16': 'w-24 h-40',
+}
+---
+
+<div class={cn('relative w-full max-w-5xl mx-auto', className)}>
+  {/* Timeline line - full height */}
+  <div class="absolute left-4 sm:left-6 top-0 bottom-0 w-0.5 bg-border opacity-30"></div>
+
+  {
+    photoData.map((timeline, index) => (
+      <div class="timeline-item relative mb-8 sm:mb-12 last:mb-0">
+        {/* Timeline header */}
+        <div class="mb-6 sm:mb-8">
+          <div class="flex items-start justify-between gap-3 sm:gap-6">
+            <div class="flex items-start gap-3 sm:gap-6">
+              <div class="timeline-node relative z-10 w-8 h-8 sm:w-12 sm:h-12 flex items-start justify-center text-lg sm:text-2xl">
+                {timeline.flag}
+              </div>
+              <div>
+                <h3 class="text-lg sm:text-2xl font-bold tracking-tight">{timeline.title}</h3>
+              </div>
+            </div>
+            <div class="text-xs sm:text-sm text-muted-foreground font-medium whitespace-nowrap mt-1">{timeline.date}</div>
+          </div>
+          {timeline.description && (
+            <div class="flex gap-3 sm:gap-6 mt-1">
+              <div class="w-8 sm:w-12 flex-shrink-0" />
+              <p class="text-sm sm:text-base text-muted-foreground">{timeline.description}</p>
+            </div>
+          )}
+        </div>
+
+        {/* Photo Stack - responsive positioning */}
+        <div class="photo-stack relative ml-[5rem] sm:ml-[5.5rem] px-2 sm:px-4 py-2 sm:py-4">
+          {timeline.photos.map((photo, photoIndex) => (
+            <div
+              class={`photo-card ${polaroidVariants[photo.variant]} bg-white p-1 sm:p-1.5 shadow-lg rounded-sm border border-gray-200 hover:shadow-xl transition-all duration-300`}
+              style={`--index: ${photoIndex}; z-index: ${timeline.photos.length - photoIndex};`}
+              data-variant={photo.variant}
+            >
+              <div class="w-full h-full bg-gray-100 overflow-hidden rounded-sm">
+                <img src={photo.src} width={photo.width} height={photo.height} class="w-full h-full object-cover" loading="lazy" alt="" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .photo-stack {
+    perspective: 1000px;
+  }
+
+  .photo-card {
+    opacity: 0;
+    transform: scale(0) rotate(0deg);
+    transition: transform 0.3s ease-in-out;
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+  }
+
+  .photo-card {
+    margin-left: -48px;
+    margin-top: -12px;
+  }
+
+  /* 移动端减少重叠，大屏幕增加重叠 */
+  @media (min-width: 640px) {
+    .photo-card {
+      margin-left: -36px;
+      margin-top: -12px;
+    }
+  }
+
+  .photo-card:hover {
+    transform: scale(1.1) rotate(0deg) !important;
+    z-index: 999 !important;
+  }
+
+  /* Animation triggered by script */
+  .timeline-item.is-in-view .photo-card {
+    opacity: 1;
+    animation: popIn 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+    animation-delay: calc(var(--index) * 100ms);
+  }
+
+  @keyframes popIn {
+    0% {
+      opacity: 0;
+      transform: scale(0) rotate(0deg);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) rotate(var(--rotation));
+    }
+  }
+</style>
+
+<script>
+  function initPhotoAnimations() {
+    const timelineItems = document.querySelectorAll('.timeline-item')
+
+    if (!timelineItems.length) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-in-view')
+            const photoCards = entry.target.querySelectorAll('.photo-card')
+            photoCards.forEach((card, index) => {
+              // Assign a random rotation to each card
+              const rotation = Math.random() * 20 - 10 // -10 to +10 degrees
+              ;(card as HTMLElement).style.setProperty('--rotation', `${rotation}deg`)
+            })
+            // No need to observe anymore once animated
+            observer.unobserve(entry.target)
+          }
+        })
+      },
+      {
+        threshold: 0.4, // Trigger when 40% of the item is visible
+      }
+    )
+
+    timelineItems.forEach((item) => {
+      observer.observe(item)
+    })
+  }
+
+  document.addEventListener('astro:page-load', initPhotoAnimations)
+  initPhotoAnimations()
+</script>

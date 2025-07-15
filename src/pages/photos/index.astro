@@ -1,7 +1,8 @@
 ---
 import { cn } from '~/lib/utils'
-import { PHOTOS_CONFIG } from '~/config'
+import { PHOTOS_CONFIG, PhotosList } from '~/config'
 import Layout from '~/layouts/Layout.astro'
+import PhotoTimeline from '~/components/photos/PhotoTimeline.astro'
 
 const { title, description, introduce } = PHOTOS_CONFIG
 ---
@@ -13,6 +14,19 @@ const { title, description, introduce } = PHOTOS_CONFIG
       <div class="pro text-muted-foreground text-balance">
         <p class="mt-2">{introduce}</p>
       </div>
+    </div>
+
+    <!-- 摄影时间轴 -->
+    <div class="mt-12 px-6 sm:px-8">
+      {
+        PhotosList.length > 0 ? (
+          <PhotoTimeline photoData={PhotosList} />
+        ) : (
+          <div class="text-muted-foreground mb-4">
+            <p class="text-sm">还没有照片，等我学成归来，OvO</p>
+          </div>
+        )
+      }
     </div>
   </div>
 </Layout>

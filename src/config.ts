@@ -2,6 +2,7 @@ import type {
   GithubConfig,
   Link,
   Photo,
+  PhotoData,
   PhotosConfig,
   PostConfig,
   Project,
@@ -248,4 +249,4 @@ export const PHOTOS_CONFIG: PhotosConfig = {
   introduce: '在这里我会记录一些在日常生活中拍摄的照片。',
 }
 
-export const PhotosList: Photo[] = []
+export const PhotosList: PhotoData[] = []

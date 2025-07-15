@@ -217,11 +217,22 @@ export interface Project {
 }
 
 /**
+ * 拍立得照片变体类型 / Polaroid photo variant types
+ * @description 定义不同宽高比的拍立得照片样式
+ * - 1x1: 正方形比例
+ * - 4x5: 标准拍立得比例
+ * - 4x3: 横向比例
+ * - 9x16: 竖向比例
+ */
+export type PolaroidVariant = '1x1' | '4x5' | '4x3' | '9x16'
+
+/**
  * 图片配置接口 / Photo configuration interface
  * @property {string} src - 图片路径 / Image path
  * @property {string} alt - 图片描述 / Image description
  * @property {number} width - 图片宽度 / Image width
  * @property {number} height - 图片高度 / Image height
+ * @property {PolaroidVariant} variant - 拍立得照片变体 / Polaroid photo variant
  * @property {string} location - 拍摄地点 / Shooting location
  * @property {string} date - 拍摄日期 / Shooting date
  * @property {string} camera - 拍摄设备 / Shooting equipment
@@ -232,6 +243,7 @@ export interface Photo {
   alt: string
   width: number
   height: number
+  variant: PolaroidVariant
   location?: string
   date?: string
   camera?: string
