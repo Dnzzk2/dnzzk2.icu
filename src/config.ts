@@ -249,4 +249,34 @@ export const PHOTOS_CONFIG: PhotosConfig = {
   introduce: '在这里我会记录一些在日常生活中拍摄的照片。',
 }
 
-export const PhotosList: PhotoData[] = []
+export const PhotosList: PhotoData[] = [
+  {
+    title: '春日漫步',
+    flag: '🌸',
+    description: '春天的阳光透过樱花洒向大地，温暖而美好',
+    date: '2024-03-15',
+    travel: '杭州西湖',
+    photos: [
+      {
+        src: '/photos/webhook-light.png',
+        alt: '樱花盛开的小径',
+        width: 800,
+        height: 600,
+        variant: '4x3',
+        location: '西湖断桥',
+        camera: 'Canon EOS R5',
+        description: '樱花飞舞的瞬间',
+      },
+      {
+        src: '/photos/webhook-light.png',
+        alt: '湖边倒影',
+        width: 600,
+        height: 800,
+        variant: '4x5',
+        location: '西湖苏堤',
+        camera: 'Canon EOS R5',
+        description: '静谧的湖面倒影',
+      },
+    ],
+  },
+]

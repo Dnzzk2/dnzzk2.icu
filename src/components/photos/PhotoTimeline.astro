@@ -1,6 +1,7 @@
 ---
 import type { PhotoData, PolaroidVariant } from '~/types'
 import { cn } from '~/lib/utils'
+import { Image } from 'astro:assets'
 
 interface Props {
   photoData: PhotoData[]
@@ -18,47 +19,53 @@ const polaroidVariants: Record<PolaroidVariant, string> = {
 }
 ---
 
-<div class={cn('relative w-full max-w-5xl mx-auto', className)}>
-  {/* Timeline line - full height */}
-  <div class="absolute left-4 sm:left-6 top-0 bottom-0 w-0.5 bg-border opacity-30"></div>
-
+<div class={cn(className)}>
   {
-    photoData.map((timeline, index) => (
-      <div class="timeline-item relative mb-8 sm:mb-12 last:mb-0">
-        {/* Timeline header */}
-        <div class="mb-6 sm:mb-8">
-          <div class="flex items-start justify-between gap-3 sm:gap-6">
-            <div class="flex items-start gap-3 sm:gap-6">
-              <div class="timeline-node relative z-10 w-8 h-8 sm:w-12 sm:h-12 flex items-start justify-center text-lg sm:text-2xl">
-                {timeline.flag}
-              </div>
-              <div>
-                <h3 class="text-lg sm:text-2xl font-bold tracking-tight">{timeline.title}</h3>
+    photoData.map((timeline) => (
+      <div class="timeline-item relative group/item">
+        <div class="flex gap-x-3">
+          <div class="relative last:after:hidden after:absolute after:top-7 after:bottom-0 after:start-3.5 after:w-px after:-translate-x-[0.5px] after:bg-zinc-200/50 dark:after:bg-zinc-700/50">
+            <div class="relative z-10 size-7 flex justify-center items-center">
+              <div class="size-2 text-base">
+                <div class="relative z-0 whitespace-nowrap w-11 text-center text-xl -top-2.5 -left-[18px]">{timeline.flag}</div>
               </div>
             </div>
-            <div class="text-xs sm:text-sm text-muted-foreground font-medium whitespace-nowrap mt-1">{timeline.date}</div>
           </div>
-          {timeline.description && (
-            <div class="flex gap-3 sm:gap-6 mt-1">
-              <div class="w-8 sm:w-12 flex-shrink-0" />
-              <p class="text-sm sm:text-base text-muted-foreground">{timeline.description}</p>
-            </div>
-          )}
-        </div>
-
-        {/* Photo Stack - responsive positioning */}
-        <div class="photo-stack relative ml-[5rem] sm:ml-[5.5rem] px-2 sm:px-4 py-2 sm:py-4">
-          {timeline.photos.map((photo, photoIndex) => (
-            <div
-              class={`photo-card ${polaroidVariants[photo.variant]} bg-white p-1 sm:p-1.5 shadow-lg rounded-sm border border-gray-200 hover:shadow-xl transition-all duration-300`}
-              style={`--index: ${photoIndex}; z-index: ${timeline.photos.length - photoIndex};`}
-              data-variant={photo.variant}
-            >
-              <div class="w-full h-full bg-gray-100 overflow-hidden rounded-sm">
-                <img src={photo.src} width={photo.width} height={photo.height} class="w-full h-full object-cover" loading="lazy" alt="" />
+          <div class="grow pt-0.5 pb-8 relative">
+            <>
+              <p class="text-xs block mt-1 sm:absolute sm:mt-0 sm:top-1.5 right-0 text-muted-foreground">{timeline.date}</p>
+              <h2 class="mt-0.5 sm:mt-0 font-sans text-md font-normal!">
+                <span class="font-semibold">{timeline.title}</span>
+              </h2>
+              <p class="mt-0.5 sm:mt-1 text-sm text-muted-foreground">
+                <span>
+                  {timeline.description}
+                  <br />
+                </span>
+              </p>
+              <div class="photo-stack mt-4 relative ml-12 sm:ml-10 py-2 sm:py-4">
+                {timeline.photos.map((photo, photoIndex) => (
+                  <div
+                    class={`photo-card ${polaroidVariants[photo.variant]} bg-white p-1 sm:p-1.5 shadow-lg rounded-sm border border-gray-200 hover:shadow-xl transition-all duration-300`}
+                    style={`--index: ${photoIndex}; z-index: ${timeline.photos.length - photoIndex};`}
+                    data-variant={photo.variant}
+                  >
+                    <div class="w-full h-full bg-gray-100 overflow-hidden rounded-sm">
+                      <Image
+                        src={photo.src}
+                        width={photo.width}
+                        height={photo.height}
+                        class="w-full h-full object-cover"
+                        loading="lazy"
+                        alt=""
+                        format="webp"
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
-            </div>
-          ))}
+            </>
+          </div>
         </div>
       </div>
     ))
@@ -115,7 +122,6 @@ const polaroidVariants: Record<PolaroidVariant, string> = {
     }
   }
 </style>
-
 <script>
   function initPhotoAnimations() {
     const timelineItems = document.querySelectorAll('.timeline-item')
