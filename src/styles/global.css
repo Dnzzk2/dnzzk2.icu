@@ -371,3 +371,8 @@ input[type='search']::-moz-search-cancel-button {
     font-weight: 500;
   }
 }
+
+/* 3D 透视工具类 */
+.perspective-1000 {
+  perspective: 1000px;
+}

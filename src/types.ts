@@ -262,9 +262,15 @@ export interface PhotosConfig {
   introduce: string
 }
 
+export type TimelineIconType = 'emoji' | 'icon' | 'color' | 'number' | 'image'
+
 export interface PhotoData {
   title: string
-  flag: string
+  icon: {
+    type: TimelineIconType
+    value: string // emoji | icon-name | color-class | number | image-url
+    fallback?: string // 备用显示
+  }
   description?: string
   date: string
   photos: Photo[]

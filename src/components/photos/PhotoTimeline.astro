@@ -1,7 +1,8 @@
 ---
 import type { PhotoData, PolaroidVariant } from '~/types'
 import { cn } from '~/lib/utils'
-import { Image } from 'astro:assets'
+import PolaroidStack from './PolaroidStack'
+import TimelineIcon from './TimelineIcon.astro'
 
 interface Props {
   photoData: PhotoData[]
@@ -9,151 +10,37 @@ interface Props {
 }
 
 const { photoData, class: className } = Astro.props
-
-// Polaroid variant size mapping - responsive sizes
-const polaroidVariants: Record<PolaroidVariant, string> = {
-  '1x1': 'w-24 h-24',
-  '4x5': 'w-24 h-28',
-  '4x3': 'w-24 h-20',
-  '9x16': 'w-24 h-40',
-}
 ---
 
 <div class={cn(className)}>
   {
-    photoData.map((timeline) => (
+    photoData.map((timeline, index) => (
       <div class="timeline-item relative group/item">
         <div class="flex gap-x-3">
           <div class="relative last:after:hidden after:absolute after:top-7 after:bottom-0 after:start-3.5 after:w-px after:-translate-x-[0.5px] after:bg-zinc-200/50 dark:after:bg-zinc-700/50">
             <div class="relative z-10 size-7 flex justify-center items-center">
-              <div class="size-2 text-base">
-                <div class="relative z-0 whitespace-nowrap w-11 text-center text-xl -top-2.5 -left-[18px]">{timeline.flag}</div>
-              </div>
+              <TimelineIcon icon={timeline.icon} index={index} />
             </div>
           </div>
           <div class="grow pt-0.5 pb-8 relative">
-            <>
-              <p class="text-xs block mt-1 sm:absolute sm:mt-0 sm:top-1.5 right-0 text-muted-foreground">{timeline.date}</p>
-              <h2 class="mt-0.5 sm:mt-0 font-sans text-md font-normal!">
-                <span class="font-semibold">{timeline.title}</span>
-              </h2>
-              <p class="mt-0.5 sm:mt-1 text-sm text-muted-foreground">
+            <p class="text-xs block mt-1 sm:absolute sm:mt-0 sm:top-1.5 right-0 text-muted-foreground">{timeline.date}</p>
+            <h2 class="mt-0.5 sm:mt-0 font-sans text-md font-normal!">
+              <span class="font-semibold">{timeline.title}</span>
+            </h2>
+            <p class="mt-0.5 sm:mt-1 text-sm text-muted-foreground">
+              {timeline.description && (
                 <span>
                   {timeline.description}
                   <br />
                 </span>
-              </p>
-              <div class="photo-stack mt-4 relative ml-12 sm:ml-10 py-2 sm:py-4">
-                {timeline.photos.map((photo, photoIndex) => (
-                  <div
-                    class={`photo-card ${polaroidVariants[photo.variant]} bg-white p-1 sm:p-1.5 shadow-lg  border border-gray-200 hover:shadow-xl transition-all duration-300`}
-                    style={`--index: ${photoIndex}; z-index: ${timeline.photos.length - photoIndex};`}
-                    data-variant={photo.variant}
-                  >
-                    <div class="w-full h-full bg-gray-100 overflow-hidden ">
-                      <Image
-                        src={photo.src}
-                        width={photo.width}
-                        height={photo.height}
-                        class="w-full h-full object-cover"
-                        loading="lazy"
-                        alt=""
-                        format="webp"
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </>
+              )}
+            </p>
+            <div class="mt-4 py-2 sm:py-4">
+              <PolaroidStack photos={timeline.photos} title={timeline.title} client:load />
+            </div>
           </div>
         </div>
       </div>
     ))
   }
 </div>
-
-<style>
-  .photo-stack {
-    perspective: 1000px;
-  }
-
-  .photo-card {
-    opacity: 0;
-    transform: scale(0) rotate(0deg);
-    transition: transform 0.3s ease-in-out;
-    cursor: pointer;
-    display: inline-block;
-    position: relative;
-  }
-
-  .photo-card {
-    margin-left: -48px;
-    margin-top: -12px;
-  }
-
-  /* 移动端减少重叠，大屏幕增加重叠 */
-  @media (min-width: 640px) {
-    .photo-card {
-      margin-left: -36px;
-      margin-top: -12px;
-    }
-  }
-
-  .photo-card:hover {
-    transform: scale(1.1) rotate(0deg) !important;
-    z-index: 999 !important;
-  }
-
-  /* Animation triggered by script */
-  .timeline-item.is-in-view .photo-card {
-    opacity: 1;
-    animation: popIn 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
-    animation-delay: calc(var(--index) * 100ms);
-  }
-
-  @keyframes popIn {
-    0% {
-      opacity: 0;
-      transform: scale(0) rotate(0deg);
-    }
-    100% {
-      opacity: 1;
-      transform: scale(1) rotate(var(--rotation));
-    }
-  }
-</style>
-<script>
-  function initPhotoAnimations() {
-    const timelineItems = document.querySelectorAll('.timeline-item')
-
-    if (!timelineItems.length) return
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-in-view')
-            const photoCards = entry.target.querySelectorAll('.photo-card')
-            photoCards.forEach((card, index) => {
-              // Assign a random rotation to each card
-              const rotation = Math.random() * 20 - 10 // -10 to +10 degrees
-              ;(card as HTMLElement).style.setProperty('--rotation', `${rotation}deg`)
-            })
-            // No need to observe anymore once animated
-            observer.unobserve(entry.target)
-          }
-        })
-      },
-      {
-        threshold: 0.4, // Trigger when 40% of the item is visible
-      }
-    )
-
-    timelineItems.forEach((item) => {
-      observer.observe(item)
-    })
-  }
-
-  document.addEventListener('astro:page-load', initPhotoAnimations)
-  initPhotoAnimations()
-</script>

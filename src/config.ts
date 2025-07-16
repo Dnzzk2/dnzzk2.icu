@@ -32,7 +32,7 @@ export const HEADER_LINKS: Link[] = [
     url: '/projects',
   },
   {
-    name: '摄影',
+    name: '照片',
     url: '/photos',
   },
 ]
@@ -55,7 +55,7 @@ export const FOOTER_LINKS: Link[] = [
     url: '/tags',
   },
   {
-    name: '摄影',
+    name: '照片',
     url: '/photos',
   },
 ]
@@ -189,7 +189,7 @@ export const GITHUB_CONFIG: GithubConfig = {
 export const POSTS_CONFIG: PostConfig = {
   title: '随笔',
   description:
-    'Dnzzk2 的技术随笔与生活感悟 - 前端开发经验分享、UI 设计思考、JavaScript 技术探索、React 开发心得，以及摄影与游戏的日常记录。',
+    'Dnzzk2 的技术随笔与生活感悟 - 前端开发经验分享、UI 设计思考、JavaScript 技术探索、React 开发心得，以及照片与游戏的日常记录。',
   introduce: '我想，生命这卷书，落笔应是亭亭常青树。',
   author: 'Dnzzk2',
   homePageConfig: {
@@ -219,7 +219,7 @@ export const POSTS_CONFIG: PostConfig = {
 
 export const TAGS_CONFIG: TagsConfig = {
   title: '标签',
-  description: '按标签浏览 Dnzzk2 的技术文章 - 前端开发、React、JavaScript、UI 设计、摄影技巧等分类标签，快速找到您感兴趣的技术内容。',
+  description: '按标签浏览 Dnzzk2 的技术文章 - 前端开发、React、JavaScript、UI 设计、照片技巧等分类标签，快速找到您感兴趣的技术内容。',
   introduce: '通过标签快速查找相关主题的随笔，发现您感兴趣的内容。',
 }
 
@@ -244,38 +244,108 @@ export const ProjectList: Project[] = [
 ]
 
 export const PHOTOS_CONFIG: PhotosConfig = {
-  title: '摄影',
-  description: 'Dnzzk2 的摄影作品集 - 记录生活中的美好瞬间，分享风景、人像、街拍等摄影作品，探索光影之美与构图技巧。',
+  title: '照片',
+  description: 'Dnzzk2 的照片作品集 - 记录生活中的美好瞬间，分享风景、人像、街拍等照片，探索光影之美与构图技巧。',
   introduce: '在这里我会记录一些在日常生活中拍摄的照片。',
 }
 
 export const PhotosList: PhotoData[] = [
   {
-    title: '春日漫步',
-    flag: '🌸',
-    description: '春天的阳光透过樱花洒向大地，温暖而美好',
-    date: '2024-03-15',
-    travel: '杭州西湖',
+    title: '朋友家的可爱猫猫',
+    icon: {
+      type: 'emoji',
+      value: '🌠',
+    },
+    description: '',
+    date: '2025-06-21',
+    travel: '',
     photos: [
       {
-        src: 'https://images.unsplash.com/photo-1750778494630-52b400bf3beb?q=80&w=1286&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        alt: '樱花盛开的小径',
-        width: 800,
-        height: 600,
-        variant: '9x16',
-        location: '西湖断桥',
-        camera: 'Canon EOS R5',
-        description: '樱花飞舞的瞬间',
+        src: '/photos/cat1.webp',
+        alt: '朋友家的可爱猫猫',
+        width: 1080,
+        height: 810,
+        variant: '4x3',
       },
       {
-        src: 'https://images.unsplash.com/photo-1751554908151-27ff8eac347d?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        alt: '湖边倒影',
-        width: 600,
-        height: 800,
-        variant: '9x16',
-        location: '西湖苏堤',
-        camera: 'Canon EOS R5',
-        description: '静谧的湖面倒影',
+        src: '/photos/cat2.webp',
+        alt: '朋友家的可爱猫猫',
+        width: 1080,
+        height: 810,
+        variant: '4x3',
+      },
+      {
+        src: '/photos/cat3.webp',
+        alt: '朋友家的可爱猫猫',
+        width: 1080,
+        height: 810,
+        variant: '4x3',
+      },
+      {
+        src: '/photos/cat4.webp',
+        alt: '朋友家的可爱猫猫',
+        width: 1080,
+        height: 810,
+        variant: '4x3',
+      },
+    ],
+  },
+  {
+    title: '宁波 · 东钱湖',
+    icon: {
+      type: 'emoji',
+      value: '🌅',
+    },
+    description: '',
+    date: '2025-03-01',
+    travel: '',
+    photos: [
+      {
+        src: '/photos/dqh1.webp',
+        alt: '宁波·东钱湖',
+        width: 1080,
+        height: 1358,
+        variant: '4x5',
+      },
+      {
+        src: '/photos/dqh2.webp',
+        alt: '宁波·东钱湖',
+        width: 1080,
+        height: 1080,
+        variant: '1x1',
+      },
+      {
+        src: '/photos/dqh3.jpg',
+        alt: '宁波·东钱湖',
+        width: 1440,
+        height: 1080,
+        variant: '4x3',
+      },
+    ],
+  },
+  {
+    title: '宁波 · 舟山',
+    icon: {
+      type: 'emoji',
+      value: '🌉',
+    },
+    description: '',
+    date: '2024-09-07',
+    travel: '',
+    photos: [
+      {
+        src: '/photos/zs1.webp',
+        alt: '宁波·舟山',
+        width: 1210,
+        height: 908,
+        variant: '4x3',
+      },
+      {
+        src: '/photos/zs2.webp',
+        alt: '宁波·舟山',
+        width: 1080,
+        height: 810,
+        variant: '4x3',
       },
     ],
   },
