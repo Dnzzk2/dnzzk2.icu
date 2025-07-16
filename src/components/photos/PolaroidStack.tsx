@@ -21,16 +21,7 @@ const PolaroidStack: React.FC<Props> = ({ photos, title, className }) => {
   const photoRotations = React.useMemo(() => generateRotations(photos.length), [photos.length])
 
   return (
-    <motion.div
-      ref={ref}
-      className={cn('relative perspective-1000 ml-4 flex items-center', className)}
-      initial={{ opacity: 0 }}
-      animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-      transition={{
-        duration: 0.6,
-        delay: 0.2,
-      }}
-    >
+    <motion.div ref={ref} className={cn('relative perspective-1000 ml-4 flex items-center', className)}>
       {photos.map((photo, index) => (
         <PolaroidCard
           key={photo.src}

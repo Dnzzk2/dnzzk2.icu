@@ -36,30 +36,19 @@ const PolaroidCard: React.FC<Props> = ({ photo, index, totalPhotos, rotation, va
       style={{
         zIndex: baseZIndex,
       }}
-      initial={{
-        opacity: 0,
-        scale: 0,
-        rotate: 0,
+      initial={'hidden'}
+      animate={isVisible ? 'show' : 'hidden'}
+      variants={{
+        hidden: { scale: 0, rotate: 0, x: -60, zIndex: totalPhotos - index },
+        show: { scale: 1, rotate: rotation, x: 0 },
       }}
-      animate={
-        isVisible
-          ? {
-              opacity: 1,
-              scale: 1,
-              rotate: rotation, // 入场时就显示倾斜
-            }
-          : {
-              opacity: 0,
-              scale: 0,
-              rotate: 0,
-            }
-      }
+      viewport={{ once: true }}
       transition={{
         type: 'spring',
         stiffness: 360,
         damping: 20,
         delay: index * 0.05, // 错开动画
-        duration: 0.5,
+        duration: 0.8,
       }}
       whileHover={{
         x: moveDistance, // 根据位置动态移动距离
