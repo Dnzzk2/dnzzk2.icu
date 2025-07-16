@@ -46,11 +46,11 @@ const polaroidVariants: Record<PolaroidVariant, string> = {
               <div class="photo-stack mt-4 relative ml-12 sm:ml-10 py-2 sm:py-4">
                 {timeline.photos.map((photo, photoIndex) => (
                   <div
-                    class={`photo-card ${polaroidVariants[photo.variant]} bg-white p-1 sm:p-1.5 shadow-lg rounded-sm border border-gray-200 hover:shadow-xl transition-all duration-300`}
+                    class={`photo-card ${polaroidVariants[photo.variant]} bg-white p-1 sm:p-1.5 shadow-lg  border border-gray-200 hover:shadow-xl transition-all duration-300`}
                     style={`--index: ${photoIndex}; z-index: ${timeline.photos.length - photoIndex};`}
                     data-variant={photo.variant}
                   >
-                    <div class="w-full h-full bg-gray-100 overflow-hidden rounded-sm">
+                    <div class="w-full h-full bg-gray-100 overflow-hidden ">
                       <Image
                         src={photo.src}
                         width={photo.width}
