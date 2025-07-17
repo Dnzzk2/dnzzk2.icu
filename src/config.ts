@@ -256,7 +256,7 @@ export const PhotosList: PhotoData[] = [
       type: 'emoji',
       value: '🌠',
     },
-    description: '',
+    description: '太卡哇伊(*^ω^*)了',
     date: '2025-06-21',
     travel: '',
     photos: [
@@ -296,7 +296,7 @@ export const PhotosList: PhotoData[] = [
       type: 'emoji',
       value: '🌅',
     },
-    description: '',
+    description: '东钱湖骑行，虽然腿抽筋了几次，但是风景很美。',
     date: '2025-03-01',
     travel: '',
     photos: [
@@ -308,7 +308,7 @@ export const PhotosList: PhotoData[] = [
         variant: '4x5',
       },
       {
-        src: '/photos/dqh2.webp',
+        src: '/photos/dqh2.jpg',
         alt: '宁波·东钱湖',
         width: 1080,
         height: 1080,
