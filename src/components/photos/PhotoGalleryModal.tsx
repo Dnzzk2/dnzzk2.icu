@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { createPortal } from 'react-dom'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useMotionValue, animate } from 'framer-motion'
 import type { Photo } from '~/types'
 
 interface Props {
@@ -14,67 +14,76 @@ interface Props {
 
 const PhotoGalleryModal: React.FC<Props> = ({ photos, title, description, isOpen, onClose, initialIndex = 0 }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex)
-  const [shouldAnimate, setShouldAnimate] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [containerWidth, setContainerWidth] = useState(400)
+  const x = useMotionValue(-initialIndex * containerWidth)
+  const gap = 16 // gap-4 = 1rem = 16px
+  const [canAnimate, setCanAnimate] = useState(false)
+
+  // 动态获取容器宽度，适配响应式
+  useEffect(() => {
+    if (containerRef.current) {
+      setContainerWidth(containerRef.current.offsetWidth)
+    }
+  }, [isOpen])
+
+  // 切换图片时，平滑动画到目标位置
+  useEffect(() => {
+    if (!isOpen) return
+    if (canAnimate) {
+      animate(x, -currentIndex * (containerWidth + gap), { type: 'tween', duration: 0.5, ease: 'easeOut' })
+    } else {
+      x.set(-currentIndex * (containerWidth + gap))
+    }
+  }, [currentIndex, containerWidth, x, isOpen, gap, canAnimate])
 
   useEffect(() => {
     if (isOpen) {
-      // 弹窗打开时直接设置到目标图片
       setCurrentIndex(initialIndex)
-      setShouldAnimate(false)
-      // 延迟启用动画，确保初始位置设置完成
-      const timer = setTimeout(() => setShouldAnimate(true), 50)
-      return () => clearTimeout(timer)
-    } else {
-      setShouldAnimate(false)
+      x.set(-initialIndex * (containerWidth + gap))
+      setCanAnimate(false)
+      setTimeout(() => setCanAnimate(true), 30)
     }
-  }, [isOpen, initialIndex])
+  }, [isOpen, initialIndex, x, containerWidth, gap])
 
-  const nextPhoto = () => {
-    if (currentIndex < photos.length - 1) {
-      setCurrentIndex(currentIndex + 1)
-    }
+  // 拖拽结束时吸附到最近图片，判定边界放宽到 7%
+  const handleDragEnd = useCallback(
+    (_: any, info: { offset: { x: number } }) => {
+      const offset = info.offset.x
+      const threshold = (containerWidth + gap) * 0.07
+      let newIdx = currentIndex
+      if (offset > threshold && currentIndex > 0) {
+        newIdx = currentIndex - 1
+      } else if (offset < -threshold && currentIndex < photos.length - 1) {
+        newIdx = currentIndex + 1
+      }
+      setCurrentIndex(newIdx)
+      animate(x, -newIdx * (containerWidth + gap), { type: 'tween', duration: 0.5, ease: 'easeOut' })
+    },
+    [containerWidth, gap, photos.length, x, currentIndex]
+  )
+
+  // 按钮切换
+  const goPrev = () => {
+    if (currentIndex > 0) setCurrentIndex((i) => i - 1)
+  }
+  const goNext = () => {
+    if (currentIndex < photos.length - 1) setCurrentIndex((i) => i + 1)
   }
 
-  const prevPhoto = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1)
-    }
-  }
-
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (!isOpen) return
-    if (e.key === 'Escape') onClose()
-    if (e.key === 'ArrowLeft' && currentIndex > 0) prevPhoto()
-    if (e.key === 'ArrowRight' && currentIndex < photos.length - 1) nextPhoto()
-  }
-
+  // 键盘切换
   useEffect(() => {
+    if (!isOpen) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+      if (e.key === 'ArrowLeft') goPrev()
+      if (e.key === 'ArrowRight') goNext()
+    }
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [isOpen, currentIndex, photos.length])
 
-  useEffect(() => {
-    if (isOpen) {
-      // 计算滚动条宽度
-      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
-
-      // 禁止滚动并补偿滚动条宽度
-      document.body.style.overflow = 'hidden'
-      document.body.style.paddingRight = `${scrollbarWidth}px`
-    } else {
-      // 恢复原状
-      document.body.style.overflow = ''
-      document.body.style.paddingRight = ''
-    }
-    return () => {
-      document.body.style.overflow = ''
-      document.body.style.paddingRight = ''
-    }
-  }, [isOpen])
-
   if (photos.length === 0) return null
-
-  const currentPhoto = photos[currentIndex]
 
   const modalContent = (
     <AnimatePresence>
@@ -87,7 +96,7 @@ const PhotoGalleryModal: React.FC<Props> = ({ photos, title, description, isOpen
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2, ease: 'easeOut' }}
         >
-          {/* 遮罩层 - 添加动画配合 */}
+          {/* 遮罩层 */}
           <motion.div
             className="absolute inset-0 bg-black/50"
             initial={{ opacity: 0 }}
@@ -96,18 +105,14 @@ const PhotoGalleryModal: React.FC<Props> = ({ photos, title, description, isOpen
             transition={{ duration: 0.2, ease: 'easeInOut' }}
           />
 
-          {/* 弹窗卡片 - 重新设计动效 */}
+          {/* 弹窗卡片 */}
           <motion.div
             className="relative bg-background shadow-2xl max-w-lg w-full mx-4 p-6"
             onClick={(e) => e.stopPropagation()}
             initial={{ opacity: 0, y: 60, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -60, scale: 0.9 }}
-            transition={{
-              duration: 0.2,
-              ease: [0.25, 0.46, 0.45, 0.94],
-              opacity: { duration: 0.25 },
-            }}
+            transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94], opacity: { duration: 0.25 } }}
           >
             {/* 头部标题区域 */}
             <div className="border-gray-100 mb-6">
@@ -124,17 +129,25 @@ const PhotoGalleryModal: React.FC<Props> = ({ photos, title, description, isOpen
             </div>
 
             {/* 图片展示区域 */}
-            <div className="relative bg-background">
-              <div className="relative overflow-hidden">
+            <div className="relative bg-background" ref={containerRef}>
+              <div className="relative overflow-hidden" style={{ width: containerWidth }}>
                 <motion.div
                   className="flex gap-4"
-                  initial={false}
-                  animate={{ x: `calc(-${currentIndex * 100}% - ${currentIndex * 1}rem)` }}
-                  transition={shouldAnimate ? { type: 'tween', duration: 0.6, ease: [0.2, 0, 0.2, 1] } : { duration: 0 }}
+                  style={{ x, width: photos.length * (containerWidth + gap) - gap }}
+                  drag="x"
+                  dragConstraints={{ left: -(photos.length - 1) * (containerWidth + gap), right: 0 }}
+                  dragElastic={0.1}
+                  onDragEnd={handleDragEnd}
+                  transition={{ type: 'tween', duration: 0.5, ease: 'easeOut' }}
                 >
-                  {photos.map((photo, index) => (
-                    <div key={photo.src} className="min-w-0 shrink-0 grow-0 basis-full flex items-center justify-center">
-                      <img draggable={false} src={photo.src} alt={photo.alt} className="max-w-full max-h-full object-contain select-none" />
+                  {photos.map((photo, idx) => (
+                    <div key={photo.src} className="flex items-center justify-center shrink-0" style={{ width: containerWidth }}>
+                      <img
+                        draggable={false}
+                        src={photo.src}
+                        alt={photo.alt}
+                        className="max-w-full max-h-full object-contain select-none pointer-events-none"
+                      />
                     </div>
                   ))}
                 </motion.div>
@@ -144,7 +157,7 @@ const PhotoGalleryModal: React.FC<Props> = ({ photos, title, description, isOpen
               {photos.length > 1 && (
                 <>
                   <button
-                    onClick={prevPhoto}
+                    onClick={goPrev}
                     disabled={currentIndex === 0}
                     className={`absolute w-8 h-8 -left-10 top-1/2 -translate-y-1/2 shadow-lg transition-all flex items-center justify-center ${
                       currentIndex === 0
@@ -156,7 +169,7 @@ const PhotoGalleryModal: React.FC<Props> = ({ photos, title, description, isOpen
                     <div className="w-5 h-5 icon-[mdi--chevron-left]"></div>
                   </button>
                   <button
-                    onClick={nextPhoto}
+                    onClick={goNext}
                     disabled={currentIndex === photos.length - 1}
                     className={`absolute w-8 h-8 -right-10 top-1/2 -translate-y-1/2 shadow-lg transition-all flex items-center justify-center ${
                       currentIndex === photos.length - 1
