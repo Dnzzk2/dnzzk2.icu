@@ -69,9 +69,9 @@
 @layer base {
   :root {
     /* 字体族 */
-    --font-lexend: 'Lexend', 'CJKEmDash', 'Numbers', 'ShangguSansSC-VF', ui-sans-serif, system-ui, sans-serif;
-    --font-sans: 'CJKEmDash', 'Numbers', 'ShangguSansSC-VF', ui-sans-serif, system-ui, sans-serif;
-    --font-geist-mono: 'GeistMono', 'Input Mono', 'Fira Code', 'ShangguSansSC-VF', monospace;
+    --font-lexend: 'Lexend', 'CJKEmDash', 'Numbers', 'Shanggu Sans SC VF', ui-sans-serif, system-ui, sans-serif;
+    --font-sans: 'CJKEmDash', 'Numbers', 'Shanggu Sans SC VF', ui-sans-serif, system-ui, sans-serif;
+    --font-geist-mono: 'GeistMono', 'Input Mono', 'Fira Code', 'Shanggu Sans SC VF', monospace;
 
     /* 基础色调 */
     --background: 255 100% 100%;
