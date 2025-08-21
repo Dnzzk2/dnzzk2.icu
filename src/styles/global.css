@@ -1,5 +1,6 @@
 /* ===== 导入依赖 ===== */
 @import 'tailwindcss';
+@import url('https://font-now.netlify.app/api/css?url=/font/da0159f4-06d5-57f4-90d5-e4dd31fcbac6/result.css');
 @plugin "@tailwindcss/typography";
 @plugin "@iconify/tailwind4";
 
