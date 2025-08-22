@@ -14,8 +14,6 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site)
 const ogImage = new URL(image || SITE.ogImage, Astro.url)
 ---
 
-<script is:inline src="/js/theme.js"></script>
-
 <!-- 页面内SEO  On-Page SEO -->
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -39,9 +37,6 @@ const ogImage = new URL(image || SITE.ogImage, Astro.url)
 
 {/* RSS Feed Link */}
 <link rel="alternate" type="application/rss+xml" title={SITE.title} href={new URL('/rss.xml', Astro.site).href} />
-
-<link rel="dns-prefetch" href="https://font-now.netlify.app" />
-<link rel="dns-prefetch" href="https://fastly.jsdelivr.net" />
 
 <!-- 预加载 -->
 <link rel="preload" href="/fonts/GeistVF.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
@@ -71,3 +66,5 @@ const ogImage = new URL(image || SITE.ogImage, Astro.url)
 <meta property="twitter:image" content={ogImage} />
 
 <ClientRouter />
+
+<script is:inline src="/js/theme.js"></script>
