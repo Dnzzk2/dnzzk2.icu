@@ -1,7 +1,6 @@
 @import 'medium-zoom/dist/style.css';
 @import 'rehype-callouts/theme/vitepress';
 @import url('https://fastly.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css');
-@import url('https://font-now.netlify.app/api/css?url=/font/da0159f4-06d5-57f4-90d5-e4dd31fcbac6/result.css');
 
 /* ===== CSS自定义属性 (现代化设计) ===== */
 :root {
