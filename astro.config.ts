@@ -11,6 +11,9 @@ import { SITE } from './src/config'
 export default defineConfig({
   site: SITE.website,
   base: SITE.base,
+  experimental: {
+    clientPrerender: true,
+  },
   prefetch: {
     prefetchAll: true,
     defaultStrategy: 'viewport',
