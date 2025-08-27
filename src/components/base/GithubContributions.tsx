@@ -142,16 +142,14 @@ export default function GithubContributions({ username, tooltipEnabled }: Props)
           <div key={weekIndex} className="grid grid-rows-7 gap-1">
             {week.map((contribution, dayIndex) => {
               const { date, count } = contribution
-              const formattedDate = new Date(date).toLocaleDateString('en-US', {
+              const formattedDate = new Date(date).toLocaleDateString('zh-CN', {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',
               })
 
-              const tooltipContent = `${formattedDate} — ${
-                count === 1 ? '1 contribution 💤' : count === 0 ? 'Rest day 🪴' : `${count} contributions`
-              }`
+              const tooltipContent = `${formattedDate} — ${count === 1 ? '1次贡献 🌟' : count === 0 ? '放松日 🪴' : `${count}次贡献`}`
 
               return (
                 <Tooltip key={dayIndex} content={tooltipContent} disabled={!tooltipEnabled || errorVisible}>

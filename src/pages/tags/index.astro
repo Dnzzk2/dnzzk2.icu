@@ -21,7 +21,7 @@ const maxCount = Math.max(...sortedTags.map((t) => t.count))
 <Layout {title} {description}>
   <div class="relative z-[1] py-8 pb-10 px-6 sm:px-8">
     <!-- 标题区域 -->
-    <div class="mb-12">
+    <div class="mb-12 fade-up animation-delay-100">
       <h1 class="tracking-tight text-4xl sm:text-5xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent pb-1.5">
         {title}
       </h1>
@@ -43,7 +43,7 @@ const maxCount = Math.max(...sortedTags.map((t) => t.count))
     </div>
 
     <!-- 标签网格 -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" data-astro-transition="animate">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 fade-up animation-delay-150" data-astro-transition="animate">
       {
         sortedTags.map((tag, index) => {
           const sizeClass = tag.count >= 10 ? 'text-base' : tag.count >= 5 ? 'text-sm' : 'text-xs'

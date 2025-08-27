@@ -1,8 +1,7 @@
 {
-  "name": "Litos",
+  "name": "dnzzk2.icu",
   "type": "module",
-  "version": "0.6.1",
-  "license": "MIT",
+  "version": "0.1.0",
   "scripts": {
     "dev": "astro dev",
     "build": "astro check && astro build",

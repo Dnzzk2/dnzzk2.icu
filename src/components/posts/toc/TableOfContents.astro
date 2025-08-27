@@ -57,8 +57,8 @@ const getRelativeIndentClass = (depth: number) => {
                   data-desktop-heading-link
                   class={cn(
                     'group flex items-center text-sm min-h-[1.75rem] w-full overflow-hidden relative',
-                    'hover:bg-gradient-to-r hover:from-primary/10 dark:hover:from-primary/25 hover:to-transparent',
-                    'data-[active]:bg-gradient-to-r data-[active]:from-primary/10 dark:data-[active]:from-primary/25 data-[active]:to-transparent '
+                    'hover:bg-gradient-to-r hover:from-primary/15 dark:hover:from-primary/25 hover:to-transparent',
+                    'data-[active]:bg-gradient-to-r data-[active]:from-primary/15 dark:data-[active]:from-primary/25 data-[active]:to-transparent '
                   )}
                 >
                   <span class="font-mono flex items-center px-2 text-xs text-primary/50 group-hover:text-primary group-data-[active]:text-primary min-w-[2rem]">
@@ -131,7 +131,7 @@ const getRelativeIndentClass = (depth: number) => {
         })
       },
       {
-        rootMargin: '-10px 0px -85% 0px',
+        rootMargin: '-80px 0px -85% 0px',
         threshold: [0, 1],
       }
     )

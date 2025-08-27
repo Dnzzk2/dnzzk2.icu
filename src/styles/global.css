@@ -151,6 +151,8 @@
   h5,
   h6 {
     @apply font-serif font-medium;
+    /* 添加滚动偏移，让标题跳转时不会贴在页面顶部 */
+    scroll-margin-top: 5rem;
   }
 
   /* 链接样式 */
