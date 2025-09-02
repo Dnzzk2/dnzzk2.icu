@@ -173,16 +173,18 @@
     opacity: 0;
     animation: fadeUp 300ms;
     animation-fill-mode: forwards;
+    will-change: transform, opacity;
+    transform: translateZ(0);
   }
 
   @keyframes fadeUp {
     0% {
       opacity: 0;
-      transform: translateY(2rem);
+      transform: translateY(2rem) translateZ(0);
     }
     100% {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) translateZ(0);
     }
   }
 

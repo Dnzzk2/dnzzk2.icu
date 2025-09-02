@@ -216,7 +216,7 @@ export const POSTS_CONFIG: PostConfig = {
   backToPostsText: '返回随笔',
   nextPostText: '下一篇',
   prevPostText: '上一篇',
-  recommendText: '推荐',
+  recommendText: '精选',
 }
 
 export const TAGS_CONFIG: TagsConfig = {
