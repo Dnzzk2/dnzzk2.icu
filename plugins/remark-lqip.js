@@ -2,9 +2,20 @@ import { visit } from 'unist-util-visit'
 import path from 'node:path'
 import { existsSync } from 'node:fs'
 import sharp from 'sharp'
-import { getPixels } from 'ndarray-pixels'
-import quantize from '@lokesh.dhakar/quantize'
-import { packColor11bit, packColor10bit } from '../src/lib/color.js'
+
+function packColor11bit(c) {
+  const r = Math.round((c.r / 0xff) * 0b1111)
+  const g = Math.round((c.g / 0xff) * 0b1111)
+  const b = Math.round((c.b / 0xff) * 0b111)
+  return (r << 7) | (g << 3) | b
+}
+
+function packColor10bit(c) {
+  const r = Math.round((c.r / 0xff) * 0b111)
+  const g = Math.round((c.g / 0xff) * 0b1111)
+  const b = Math.round((c.b / 0xff) * 0b111)
+  return (r << 7) | (g << 3) | b
+}
 
 /**
  * 基于纯CSS的LQIP实现
@@ -13,65 +24,42 @@ import { packColor11bit, packColor10bit } from '../src/lib/color.js'
  */
 
 /**
- * 创建像素数组用于颜色量化
- */
-function createPixelArray(pixels, pixelCount, quality) {
-  const pixelArray = []
-
-  for (let i = 0, offset, r, g, b; i < pixelCount; i += quality) {
-    offset = i * 4
-    r = pixels[offset]
-    g = pixels[offset + 1]
-    b = pixels[offset + 2]
-
-    // 跳过完全透明的像素
-    if (pixels[offset + 3] > 128) {
-      pixelArray.push([r, g, b])
-    }
-  }
-
-  return pixelArray
-}
-
-/**
- * 加载图像数据
- */
-async function loadImg(img) {
-  return new Promise((resolve, reject) => {
-    sharp(img)
-      .toBuffer()
-      .then((buffer) =>
-        sharp(buffer)
-          .metadata()
-          .then((metadata) => ({ buffer, format: metadata.format }))
-      )
-      .then(({ buffer, format }) => getPixels(buffer, format))
-      .then(resolve)
-      .catch(reject)
-  })
-}
-
-/**
- * 从图像中提取主要颜色
+ * 使用Sharp从图像中提取3个特定位置的颜色
  */
 async function extractColors(imagePath) {
-  const imgData = await loadImg(imagePath)
-  const pixelCount = imgData.shape[0] * imgData.shape[1]
-  const pixelArray = createPixelArray(imgData.data, pixelCount, 10)
+  try {
+    // 使用sharp将图像缩放到3x3并获取原始像素数据
+    const { data, info } = await sharp(imagePath)
+      .resize(3, 3, {
+        fit: 'fill',
+        kernel: 'lanczos3', // 高质量缩放
+      })
+      .raw()
+      .toBuffer({ resolveWithObject: true })
 
-  if (pixelArray.length === 0) {
+    const pixels = []
+
+    // 从原始像素数据中提取RGB值
+    for (let a = 0; a < data.length; a += info.channels) {
+      pixels.push({
+        r: data[a],
+        g: data[a + 1],
+        b: data[a + 2],
+      })
+    }
+
+    // 选择3个特定位置的颜色：左上角(0)、中心偏右(4)、右下角(8)
+    // 3x3网格的索引布局：
+    // 0 1 2
+    // 3 4 5
+    // 6 7 8
+    const [c0, c1, c2] = [pixels[0], pixels[4], pixels[8]]
+
+    return [c0, c1, c2]
+  } catch (error) {
+    console.warn(`颜色提取失败: ${imagePath}`, error.message)
     return null
   }
-
-  // 使用量化算法提取3个主要颜色
-  const cmap = quantize(pixelArray, 3)
-  const palette = cmap ? cmap.palette() : null
-
-  if (!palette || palette.length < 3) {
-    return null
-  }
-
-  return palette.slice(0, 3).map(([r, g, b]) => ({ r, g, b }))
 }
 
 /**
