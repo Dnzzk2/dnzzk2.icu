@@ -1,6 +1,6 @@
 import { visit } from 'unist-util-visit'
 import path from 'node:path'
-import { existsSync } from 'node:fs'
+import { existsSync, readdirSync } from 'node:fs'
 import sharp from 'sharp'
 
 function packColor11bit(c) {
@@ -201,6 +201,20 @@ function remarkLQIP() {
 
 export default remarkLQIP
 
+// 在构建环境中，我们可以通过堆栈跟踪获取调用上下文
+function getCallerContext() {
+  const stack = new Error().stack
+  if (!stack) return null
+
+  // 查找包含 /content/ 的文件路径（Windows和Linux兼容）
+  const contentMatch = stack.match(/([^:\s]+[\/\\]content[\/\\][^:\s)]+)/i)
+  if (contentMatch) {
+    return contentMatch[1].replace(/\\/g, '/')
+  }
+
+  return null
+}
+
 export async function generateLQIPFromPath(src) {
   try {
     let imagePath
@@ -209,7 +223,13 @@ export async function generateLQIPFromPath(src) {
       imagePath = resolveImagePath(src, '')
     } else if (src && typeof src === 'object') {
       // 处理Astro ImageMetadata对象
-      if (src.src) {
+
+      // 尝试多种方式获取原始文件路径
+      if (src.fsPath) {
+        imagePath = src.fsPath
+      } else if (src.pathname) {
+        imagePath = src.pathname
+      } else if (src.src) {
         let cleanSrc = src.src
 
         // 移除Astro的特殊前缀和查询参数
@@ -217,15 +237,46 @@ export async function generateLQIPFromPath(src) {
           // 提取真实文件路径：/@fs/D:/Code/dnzzk2.icu/src/content/...
           cleanSrc = cleanSrc.split('/@fs/')[1]
           if (cleanSrc) {
-            // 移除查询参数
-            imagePath = cleanSrc.split('?')[0]
+            // 移除查询参数并规范化路径分隔符
+            imagePath = cleanSrc.split('?')[0].replace(/\\/g, '/')
+          }
+        } else if (cleanSrc.startsWith('/_astro/')) {
+          // 对于/_astro/路径，这是Astro优化后的路径
+          // 尝试从调用上下文推断原始路径
+          const callerContext = getCallerContext()
+
+          if (callerContext) {
+            // 从调用文件的目录中查找可能的图片文件
+            const contextDir = path.dirname(callerContext)
+            const assetsDir = path.join(contextDir, 'assets')
+
+            // 尝试匹配文件扩展名
+            const srcFileName = path.basename(cleanSrc)
+            const fileExtension = path.extname(srcFileName)
+
+            if (existsSync(assetsDir)) {
+              // 在assets目录中查找同类型的文件
+              const files = readdirSync(assetsDir)
+              const matchingFile = files.find(
+                (file) => path.extname(file) === fileExtension || file.includes(path.parse(srcFileName).name.split('.')[0])
+              )
+
+              if (matchingFile) {
+                imagePath = path.join(assetsDir, matchingFile)
+              }
+            }
+          }
+
+          if (!imagePath) {
+            console.log('无法推断原始路径，跳过LQIP生成:', cleanSrc)
+            return null
           }
         } else {
           // 处理普通路径
           imagePath = resolveImagePath(cleanSrc.split('?')[0], '')
         }
       } else {
-        console.warn('ImageMetadata对象缺少src属性:', src)
+        console.warn('ImageMetadata对象缺少可用的路径属性:', Object.keys(src))
         return null
       }
     } else {
