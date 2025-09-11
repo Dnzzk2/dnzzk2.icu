@@ -199,7 +199,7 @@ export const POSTS_CONFIG: PostConfig = {
   },
   postPageConfig: {
     size: 10,
-    type: 'time-line',
+    type: 'image',
     coverLayout: 'right',
   },
   tagsPageConfig: {
@@ -207,7 +207,7 @@ export const POSTS_CONFIG: PostConfig = {
     type: 'time-line',
   },
   ogImageUseCover: true,
-  postType: 'metaOnly',
+  postType: 'coverSplit',
   imageDarkenInDark: true,
   readMoreText: '阅读更多',
   prevPageText: '上一页',

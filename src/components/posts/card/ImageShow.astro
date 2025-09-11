@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets'
+import LqipImage from '~/components/base/LqipImage.astro'
 import { formatDate } from '~/lib/utils'
 import { POSTS_CONFIG } from '~/config'
 import Badge from '~/components/posts/base/Badge.astro'
@@ -24,14 +25,15 @@ const recommendText = POSTS_CONFIG.recommendText
       <div class="aspect-[1200/630] overflow-hidden bg-muted/30 relative">
         {
           post.data.cover && (
-            <Image
+            <LqipImage
               src={post.data.cover}
-              alt={post.data.title}
+              alt=""
               width={IMAGE_WIDTH}
               height={IMAGE_HEIGHT}
               loading="lazy"
               decoding="async"
-              class="object-cover "
+              format="webp"
+              class="w-full h-full object-cover"
             />
           )
         }

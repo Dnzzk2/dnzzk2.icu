@@ -200,3 +200,55 @@ function remarkLQIP() {
 }
 
 export default remarkLQIP
+
+export async function generateLQIPFromPath(src) {
+  try {
+    let imagePath
+
+    if (typeof src === 'string') {
+      imagePath = resolveImagePath(src, '')
+    } else if (src && typeof src === 'object') {
+      // 处理Astro ImageMetadata对象
+      if (src.src) {
+        let cleanSrc = src.src
+
+        // 移除Astro的特殊前缀和查询参数
+        if (cleanSrc.includes('/@fs/')) {
+          // 提取真实文件路径：/@fs/D:/Code/dnzzk2.icu/src/content/...
+          cleanSrc = cleanSrc.split('/@fs/')[1]
+          if (cleanSrc) {
+            // 移除查询参数
+            imagePath = cleanSrc.split('?')[0]
+          }
+        } else {
+          // 处理普通路径
+          imagePath = resolveImagePath(cleanSrc.split('?')[0], '')
+        }
+      } else {
+        console.warn('ImageMetadata对象缺少src属性:', src)
+        return null
+      }
+    } else {
+      console.warn('无效的图像源:', src)
+      return null
+    }
+
+    if (!imagePath) {
+      console.warn('无法解析图像路径:', src)
+      return null
+    }
+
+    // 检查文件是否存在
+    if (!existsSync(imagePath)) {
+      console.warn(`图像文件不存在: ${imagePath}`)
+      return null
+    }
+
+    // 分析图像并生成LQIP
+    const result = await analyzeImageForLQIP(imagePath)
+    return result ? result.lqipHex : null
+  } catch (error) {
+    console.warn('LQIP生成失败:', error.message)
+    return null
+  }
+}

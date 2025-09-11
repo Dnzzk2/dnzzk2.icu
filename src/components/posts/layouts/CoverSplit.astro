@@ -2,8 +2,8 @@
 import { formatDate } from '~/lib/utils'
 import { POSTS_CONFIG } from '~/config'
 import Prose from '~/components/posts/base/Prose.astro'
-import ZoomImage from '~/components/base/ZoomImage.astro'
 import Badge from '~/components/posts/base/Badge.astro'
+import LqipImage from '~/components/base/LqipImage.astro'
 
 interface Props {
   frontmatter: any
@@ -59,11 +59,15 @@ const recommendText = POSTS_CONFIG.recommendText
         </div>
         <div class="md:w-2/5">
           <div class="aspect-[1200/630] w-full overflow-hidden border border-border/50 bg-muted/30">
-            <ZoomImage
+            <LqipImage
               src={frontmatter.cover}
-              alt={frontmatter.title}
+              alt=""
+              width={1200}
+              height={630}
+              loading="lazy"
+              decoding="async"
+              format="webp"
               class="w-full h-full object-cover"
-              sizes="(max-width: 768px) 100vw, 45vw"
             />
           </div>
         </div>
