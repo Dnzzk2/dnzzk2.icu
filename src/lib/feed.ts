@@ -37,6 +37,44 @@ const imageModules = import.meta.glob<{ default: ImageMetadata }>('/src/content/
   eager: true,
 })
 
+// 清理HTML内容，回归markdown本质
+function cleanHtmlForRSS(htmlContent: string): string {
+  let cleaned = htmlContent
+
+  // 1. 去掉标题中的锚点链接（包含h1-h6字样的）
+  cleaned = cleaned.replace(/<(h[1-6])([^>]*)>(.*?)<a[^>]*href="#[^"]*"[^>]*>[^<]*<\/a><\/\1>/gi, '<$1$2>$3</$1>')
+
+  // 2. 处理增强语法的链接，转换为普通链接（去掉图标）
+  // :link[文本]{id=url} -> <a href="url">文本</a>
+  cleaned = cleaned.replace(/:link\[([^\]]+)\]\{id=([^}]+)\}/g, '<a href="$2">$1</a>')
+
+  // 3. 去掉所有icon.horse的图标
+  cleaned = cleaned.replace(/<img[^>]*src="[^"]*icon\.horse[^"]*"[^>]*>/gi, '')
+
+  // 4. 清理链接中多余的图标和空白
+  cleaned = cleaned.replace(/<a([^>]*)>\s*<img[^>]*>\s*([^<]+)\s*<\/a>/gi, '<a$1>$2</a>')
+
+  // 5. 处理figure中的双图片，只保留img-light或第一张
+  cleaned = cleaned.replace(/<figure[^>]*>([\s\S]*?)<\/figure>/gi, (match, content) => {
+    // 查找所有图片
+    const imgMatches = content.match(/<img[^>]*>/g)
+    if (imgMatches && imgMatches.length > 1) {
+      // 优先选择img-light，否则选择第一张
+      const lightImg = imgMatches.find((img: string) => img.includes('img-light'))
+      const selectedImg = lightImg || imgMatches[0]
+
+      // 提取figcaption
+      const figcaptionMatch = content.match(/<figcaption[^>]*>([\s\S]*?)<\/figcaption>/)
+      const figcaption = figcaptionMatch ? figcaptionMatch[0] : ''
+
+      return `<figure>${selectedImg}${figcaption}</figure>`
+    }
+    return match
+  })
+
+  return cleaned
+}
+
 // 处理图片路径，将相对路径转换为 Astro 优化后的路径
 async function processImagePaths(htmlContent: string, siteUrl: string, postId: string): Promise<string> {
   const imgRegex = /<img([^>]+)src=['"]([^'"]+)['"]([^>]*)>/gi
@@ -79,6 +117,29 @@ async function processImagePaths(htmlContent: string, siteUrl: string, postId: s
   return processedContent
 }
 
+// 添加封面图到文章开头
+async function addCoverImage(post: CollectionEntry<'posts'>, siteUrl: string): Promise<string> {
+  if (!post.data.cover) {
+    return ''
+  }
+
+  const coverPath = `/src/content/posts/${post.id}/${post.data.cover}`
+  const imageModule = imageModules[coverPath]
+
+  if (imageModule && imageModule.default) {
+    try {
+      const optimizedImage = await getImage({ src: imageModule.default })
+      const absoluteUrl = new URL(optimizedImage.src, siteUrl).toString()
+      return `<img src="${absoluteUrl}" alt="${post.data.title}" style="width: 100%; height: auto; margin-bottom: 1em;" />`
+    } catch (error) {
+      console.warn(`Failed to process cover image: ${coverPath}`, error)
+      return ''
+    }
+  }
+
+  return ''
+}
+
 // 共享的文章处理逻辑
 async function processPostsForFeed() {
   const { posts, siteUrl } = config
@@ -103,16 +164,25 @@ async function processPostsForFeed() {
 
         // 净化 HTML 内容
         const sanitizedContent = sanitizeHtml(result.code, {
-          allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
+          allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'figure', 'figcaption']),
           allowedAttributes: {
             ...sanitizeHtml.defaults.allowedAttributes,
             a: ['href', 'target', 'rel'], // 允许链接属性
-            img: ['src', 'alt', 'width', 'height', 'class'], // 允许图片属性
+            img: ['src', 'alt', 'width', 'height', 'class', 'style'], // 允许图片属性
+            figure: ['class'],
+            figcaption: ['class'],
           },
         })
 
+        // 清理HTML，回归markdown本质
+        const cleanedContent = cleanHtmlForRSS(sanitizedContent)
+
         // 处理图片路径
-        const htmlContent = await processImagePaths(sanitizedContent, siteUrl, post.id)
+        const processedContent = await processImagePaths(cleanedContent, siteUrl, post.id)
+
+        // 添加封面图
+        const coverImage = await addCoverImage(post, siteUrl)
+        const htmlContent = coverImage + processedContent
 
         return { ...post, htmlContent }
       } catch (error) {
@@ -130,6 +200,7 @@ export async function generateRSS20(): Promise<string> {
   const lastBuildDate = new Date().toISOString()
 
   const processedPosts = await processPostsForFeed()
+  console.log(processedPosts)
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="/rss/rss-styles.xsl"?>
