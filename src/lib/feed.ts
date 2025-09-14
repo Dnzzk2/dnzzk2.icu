@@ -123,21 +123,18 @@ async function addCoverImage(post: CollectionEntry<'posts'>, siteUrl: string): P
     return ''
   }
 
-  const coverPath = `/src/content/posts/${post.id}/${post.data.cover}`
-  const imageModule = imageModules[coverPath]
-
-  if (imageModule && imageModule.default) {
-    try {
-      const optimizedImage = await getImage({ src: imageModule.default })
+  try {
+    if (post.data.cover && typeof post.data.cover === 'object' && post.data.cover.src) {
+      const optimizedImage = await getImage({ src: post.data.cover })
       const absoluteUrl = new URL(optimizedImage.src, siteUrl).toString()
-      return `<img src="${absoluteUrl}" alt="${post.data.title}" style="width: 100%; height: auto; margin-bottom: 1em;" />`
-    } catch (error) {
-      console.warn(`Failed to process cover image: ${coverPath}`, error)
-      return ''
+      const coverHtml = `<img src="${absoluteUrl}" alt="${post.data.title}" style="width: 100%; height: auto; margin-bottom: 1em;" />`
+      return coverHtml
     }
+    return ''
+  } catch (error) {
+    console.warn(`Failed to process cover image:`, error)
+    return ''
   }
-
-  return ''
 }
 
 // 共享的文章处理逻辑
@@ -182,7 +179,8 @@ async function processPostsForFeed() {
 
         // 添加封面图
         const coverImage = await addCoverImage(post, siteUrl)
-        const htmlContent = coverImage + processedContent
+
+        const htmlContent = coverImage + '\n' + processedContent
 
         return { ...post, htmlContent }
       } catch (error) {
@@ -200,7 +198,6 @@ export async function generateRSS20(): Promise<string> {
   const lastBuildDate = new Date().toISOString()
 
   const processedPosts = await processPostsForFeed()
-  console.log(processedPosts)
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="/rss/rss-styles.xsl"?>
