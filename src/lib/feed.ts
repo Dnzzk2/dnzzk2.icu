@@ -1,11 +1,30 @@
+import { SITE } from '~/config'
+import { getAllPosts } from '../lib/data'
 import type { CollectionEntry } from 'astro:content'
+import sanitizeHtml from 'sanitize-html'
+// 导入 Astro 的 markdown 处理器和插件配置
+import { createMarkdownProcessor } from '@astrojs/markdown-remark'
+import { remarkPlugins, rehypePlugins } from '../../plugins'
+import { getImage } from 'astro:assets'
+import type { ImageMetadata } from 'astro'
 
-export interface RSSConfig {
+interface RSSConfig {
+  siteUrl: string
   title: string
   description: string
-  siteUrl: string
   author: string
+  lang: string
   posts: CollectionEntry<'posts'>[]
+}
+
+// 站点配置
+const config: RSSConfig = {
+  siteUrl: SITE.website,
+  title: SITE.title,
+  description: SITE.description,
+  author: SITE.author,
+  lang: SITE.lang,
+  posts: await getAllPosts(),
 }
 
 // XML转义函数
@@ -13,38 +32,104 @@ export function escapeXml(text: string): string {
   return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;')
 }
 
-// 获取文章完整内容
-function getFullContent(post: CollectionEntry<'posts'>): string {
-  // 返回文章的完整 markdown 内容
-  // RSS 阅读器通常可以处理 markdown 格式
-  // 或者可以显示为纯文本
-  return post.body || post.data.description || ''
+// 获取所有图片资源 - 修正类型
+const imageModules = import.meta.glob<{ default: ImageMetadata }>('/src/content/posts/**/assets/*.{jpeg,jpg,png,gif,webp,svg}', {
+  eager: true,
+})
+
+// 处理图片路径，将相对路径转换为 Astro 优化后的路径
+async function processImagePaths(htmlContent: string, siteUrl: string, postId: string): Promise<string> {
+  const imgRegex = /<img([^>]+)src=['"]([^'"]+)['"]([^>]*)>/gi
+  let processedContent = htmlContent
+
+  const matches = Array.from(htmlContent.matchAll(imgRegex))
+
+  for (const match of matches) {
+    const [fullMatch, beforeSrc, src, afterSrc] = match
+
+    // 跳过已经是绝对路径的图片
+    if (src.startsWith('http') || src.startsWith('//') || src.startsWith('/_astro/')) {
+      continue
+    }
+
+    // 处理相对路径图片
+    if (src.startsWith('assets/')) {
+      const imagePath = `/src/content/posts/${postId}/${src}`
+      const imageModule = imageModules[imagePath]
+
+      if (imageModule && imageModule.default) {
+        try {
+          // 使用 imageModule.default 获取 ImageMetadata
+          const optimizedImage = await getImage({ src: imageModule.default })
+          const absoluteUrl = new URL(optimizedImage.src, siteUrl).toString()
+
+          const newImgTag = `<img${beforeSrc}src="${absoluteUrl}"${afterSrc}>`
+          processedContent = processedContent.replace(fullMatch, newImgTag)
+        } catch (error) {
+          console.warn(`Failed to process image: ${imagePath}`, error)
+          // 回退到基本的绝对路径
+          const fallbackUrl = `${siteUrl}/src/content/posts/${postId}/${src}`
+          const newImgTag = `<img${beforeSrc}src="${fallbackUrl}"${afterSrc}>`
+          processedContent = processedContent.replace(fullMatch, newImgTag)
+        }
+      }
+    }
+  }
+
+  return processedContent
 }
 
-// 生成RSS 2.0格式
-export function generateRSS20(config: RSSConfig): string {
-  const { title, description, siteUrl, author, posts } = config
-  const lastBuildDate = new Date().toUTCString()
+// 共享的文章处理逻辑
+async function processPostsForFeed() {
+  const { posts, siteUrl } = config
 
-  const items = posts
-    .map((post) => {
-      const postUrl = `${siteUrl}posts/${post.id}/`
-      const pubDate = new Date(post.data.pubDate).toUTCString()
-      const fullContent = getFullContent(post)
+  // 创建与项目相同配置的 markdown 处理器
+  const processor = await createMarkdownProcessor({
+    remarkPlugins,
+    rehypePlugins,
+    syntaxHighlight: false, // 与 astro.config.ts 保持一致
+  })
 
-      return `
-    <item>
-      <title>${escapeXml(post.data.title)}</title>
-      <link>${postUrl}</link>
-      <guid>${postUrl}</guid>
-      <pubDate>${pubDate}</pubDate>
-      <description><![CDATA[${post.data.description || ''}]]></description>
-      <content:encoded><![CDATA[${fullContent}]]></content:encoded>
-      <author>${escapeXml(post.data.author || author)}</author>
-      ${post.data.tags ? post.data.tags.map((tag) => `<category>${escapeXml(tag)}</category>`).join('') : ''}
-    </item>`
+  // 处理所有文章
+  const processedPosts = await Promise.all(
+    posts.map(async (post) => {
+      if (!post.body) {
+        return { ...post, htmlContent: '' }
+      }
+
+      try {
+        // 使用 Astro 的 markdown 处理器
+        const result = await processor.render(post.body)
+
+        // 净化 HTML 内容
+        const sanitizedContent = sanitizeHtml(result.code, {
+          allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
+          allowedAttributes: {
+            ...sanitizeHtml.defaults.allowedAttributes,
+            a: ['href', 'target', 'rel'], // 允许链接属性
+            img: ['src', 'alt', 'width', 'height', 'class'], // 允许图片属性
+          },
+        })
+
+        // 处理图片路径
+        const htmlContent = await processImagePaths(sanitizedContent, siteUrl, post.id)
+
+        return { ...post, htmlContent }
+      } catch (error) {
+        console.error(`Error processing post ${post.id}:`, error)
+        return { ...post, htmlContent: '' }
+      }
     })
-    .join('')
+  )
+
+  return processedPosts
+}
+
+export async function generateRSS20(): Promise<string> {
+  const { title, description, siteUrl, author, lang } = config
+  const lastBuildDate = new Date().toISOString()
+
+  const processedPosts = await processPostsForFeed()
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="/rss/rss-styles.xsl"?>
@@ -53,57 +138,72 @@ export function generateRSS20(config: RSSConfig): string {
     <title>${escapeXml(title)}</title>
     <description>${escapeXml(description)}</description>
     <link>${siteUrl}</link>
-    <language>zh-CN</language>
+    <language>${lang}</language>
     <managingEditor>${escapeXml(author)}</managingEditor>
     <webMaster>${escapeXml(author)}</webMaster>
+    <author>${escapeXml(author)}</author>
+    <pubDate>${lastBuildDate}</pubDate>
     <lastBuildDate>${lastBuildDate}</lastBuildDate>
-    <atom:link href="${siteUrl}rss.xml" rel="self" type="application/rss+xml"/>
-    ${items}
+    <generator>Astro Litos Theme</generator>
+    <atom:link href="${siteUrl}/rss.xml" rel="self" type="application/rss+xml" />
+    ${processedPosts
+      .map(
+        (post) => `
+    <item>
+      <title>${escapeXml(post.data.title)}</title>
+      <link>${siteUrl}/posts/${post.id}</link>
+      <guid>${siteUrl}/posts/${post.id}</guid>
+      <pubDate>${post.data.pubDate.toISOString()}</pubDate>
+      <description><![CDATA[${post.data.description || ''}]]></description>
+      <content:encoded><![CDATA[${post.htmlContent}]]></content:encoded>
+      <author>${escapeXml(post.data.author || author)}</author>
+      ${post.data.tags ? post.data.tags.map((tag) => `<category>${escapeXml(tag)}</category>`).join('') : ''}
+    </item>`
+      )
+      .join('')}
   </channel>
 </rss>`
 }
 
-// 生成Atom 1.0格式
-export function generateAtom10(config: RSSConfig): string {
-  const { title, description, siteUrl, author, posts } = config
-  const updated = new Date().toISOString()
+export async function generateAtom10(): Promise<string> {
+  const { title, description, siteUrl, author, lang } = config
+  const lastBuildDate = new Date().toISOString()
 
-  const entries = posts
-    .map((post) => {
-      const postUrl = `${siteUrl}posts/${post.id}/`
-      const published = new Date(post.data.pubDate).toISOString()
-      const updatedDate = post.data.updatedDate ? new Date(post.data.updatedDate).toISOString() : published
-      const fullContent = getFullContent(post)
+  const processedPosts = await processPostsForFeed()
 
-      return `
-  <entry>
-    <title>${escapeXml(post.data.title)}</title>
-    <link href="${postUrl}"/>
-    <id>${postUrl}</id>
-    <published>${published}</published>
-    <updated>${updatedDate}</updated>
-    <summary type="text">${escapeXml(post.data.description || '')}</summary>
-    <content type="html"><![CDATA[${fullContent}]]></content>
-    <author>
-      <name>${escapeXml(post.data.author || author)}</name>
-    </author>
-    ${post.data.tags ? post.data.tags.map((tag) => `<category term="${escapeXml(tag)}"/>`).join('') : ''}
-  </entry>`
-    })
-    .join('')
-
-  return `<?xml version="1.0" encoding="utf-8"?>
+  return `<?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="/rss/atom-styles.xsl"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>${escapeXml(title)}</title>
   <subtitle>${escapeXml(description)}</subtitle>
-  <link href="${siteUrl}"/>
-  <link href="${siteUrl}atom.xml" rel="self"/>
-  <updated>${updated}</updated>
-  <id>${siteUrl}</id>
+  <link href="${siteUrl}/atom.xml" rel="self" type="application/atom+xml"/>
+  <link href="${siteUrl}" rel="alternate" type="text/html"/>
+  <updated>${lastBuildDate}</updated>
+  <language>${lang}</language>
+  <id>${siteUrl}/</id>
   <author>
     <name>${escapeXml(author)}</name>
+    <uri>${siteUrl}</uri>
   </author>
-  ${entries}
+  <generator uri="https://github.com/Dnzzk2/Litos" version="5.0">Astro Litos Theme</generator>
+  <rights>Copyright © ${new Date().getFullYear()} ${escapeXml(author)}</rights>
+  ${processedPosts
+    .map(
+      (post) => `
+  <entry>
+    <title>${escapeXml(post.data.title)}</title>
+    <link href="${siteUrl}/posts/${post.id}" rel="alternate" type="text/html"/>
+    <id>${siteUrl}/posts/${post.id}</id>
+    <updated>${(post.data.updatedDate || post.data.pubDate).toISOString()}</updated>
+    <published>${post.data.pubDate.toISOString()}</published>
+    <author>
+      <name>${escapeXml(post.data.author || author)}</name>
+    </author>
+    <summary type="text">${escapeXml(post.data.description || '')}</summary>
+    <content type="html"><![CDATA[${post.htmlContent}]]></content>
+    ${post.data.tags ? post.data.tags.map((tag) => `<category term="${escapeXml(tag)}" />`).join('\n    ') : ''}
+  </entry>`
+    )
+    .join('')}
 </feed>`
 }

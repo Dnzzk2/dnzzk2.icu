@@ -15,7 +15,7 @@ import type {
 export const SITE: Site = {
   title: 'Dnzzk2',
   description: 'Dnzzk2 的个人网站 - 前端开发者与 UI 设计爱好者，分享前端技术、设计思考、开源项目与生活感悟。探索技术之美，记录成长点滴。',
-  website: 'https://dnzzk2.icu/',
+  website: 'https://dnzzk2.icu',
   lang: 'zh-CN',
   base: '/',
   author: 'Dnzzk2',
