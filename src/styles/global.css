@@ -168,23 +168,43 @@
 
 /* ===== 动画效果 ===== */
 @layer base {
-  /* 淡入上升动画 */
   .fade-up {
     opacity: 0;
-    animation: fadeUp 300ms;
+    animation: fadeUp 400ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
     animation-fill-mode: forwards;
     will-change: transform, opacity;
-    transform: translateZ(0);
+    transform: translate3d(0, 2rem, 0);
+    backface-visibility: hidden;
+    perspective: 1000px;
   }
 
   @keyframes fadeUp {
     0% {
       opacity: 0;
-      transform: translateY(2rem) translateZ(0);
+      transform: translate3d(0, 2rem, 0);
     }
     100% {
       opacity: 1;
-      transform: translateY(0) translateZ(0);
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  .fade-up-light {
+    opacity: 0;
+    animation: fadeUpLight 300ms ease-out;
+    animation-fill-mode: forwards;
+    will-change: opacity;
+    transform: translate3d(0, 0, 0);
+  }
+
+  @keyframes fadeUpLight {
+    0% {
+      opacity: 0;
+      transform: translate3d(0, 1rem, 0);
+    }
+    100% {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
     }
   }
 
@@ -196,6 +216,25 @@
   }
   .animation-delay-200 {
     animation-delay: 200ms;
+  }
+
+  /* Safari 特定优化 */
+  @supports (-webkit-appearance: none) {
+    .fade-up {
+      animation-duration: 350ms;
+      transform: translate3d(0, 1.5rem, 0);
+    }
+
+    @keyframes fadeUp {
+      0% {
+        opacity: 0;
+        transform: translate3d(0, 1.5rem, 0);
+      }
+      100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+      }
+    }
   }
 
   /* 主题切换动画 */
