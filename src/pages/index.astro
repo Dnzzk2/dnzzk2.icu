@@ -24,67 +24,71 @@ if (hasPinnedPosts) {
 ---
 
 <Layout title="Readme" description={SITE.description}>
-  <div class="relative z-[1] fade-up">
-    <div class="py-8 pb-10 px-6 sm:px-8">
-      <h1 class="flex flex-col gap-2">
-        <span class="text-4xl sm:text-5xl tracking-tight"> Dnzzk2 </span>
-        <span class="text-muted-foreground font-light text-xl sm:text-2xl block tracking-wide text-balance"> 前端开发 & 游戏玩家 </span>
-      </h1>
-      <div class="pro text-muted-foreground">
-        <p>你好👋，我是许留山，英文笔名 Dnzzk2 。</p>
-        <p>
-          目前从事于前端开发工作，对 UI 设计略感兴趣，平时会关注 UI
-          设计和前端，了解些新鲜事物。工作之余，我热衷于游戏，对英雄联盟、无畏契约、永劫无间、黑神话悟空等游戏均有涉猎，除此之外，我也喜欢用相机记录生活中的风景与点滴。
-        </p>
-        <p>
-          如果你有兴趣了解我的更多动态，欢迎访问我的博客中的
-          "随笔"，那里分享着我的成长故事、遇到的困惑以及一些个人思考。期待与你在这里相遇！
-        </p>
+  <div class="relative z-[1]">
+    <div class="fade-up">
+      <div class="py-8 pb-10 px-6 sm:px-8">
+        <h1 class="flex flex-col gap-2">
+          <span class="text-4xl sm:text-5xl tracking-tight"> Dnzzk2 </span>
+          <span class="text-muted-foreground font-light text-xl sm:text-2xl block tracking-wide text-balance"> 前端开发 & 游戏玩家 </span>
+        </h1>
+        <div class="pro text-muted-foreground">
+          <p>你好👋，我是许留山，英文笔名 Dnzzk2 。</p>
+          <p>
+            目前从事于前端开发工作，对 UI 设计略感兴趣，平时会关注 UI
+            设计和前端，了解些新鲜事物。工作之余，我热衷于游戏，对英雄联盟、无畏契约、永劫无间、黑神话悟空等游戏均有涉猎，除此之外，我也喜欢用相机记录生活中的风景与点滴。
+          </p>
+          <p>
+            如果你有兴趣了解我的更多动态，欢迎访问我的博客中的
+            "随笔"，那里分享着我的成长故事、遇到的困惑以及一些个人思考。期待与你在这里相遇！
+          </p>
+        </div>
+        <div class="mt-6 flex gap-6">
+          {
+            SOCIAL_LINKS.map((item) => {
+              return (
+                <SocialLink href={item.url} icon={item.icon} aria-label={`Link of ${item.name}`} count={item.count} label="followers" />
+              )
+            })
+          }
+        </div>
       </div>
-      <div class="mt-6 flex gap-6">
-        {
-          SOCIAL_LINKS.map((item) => {
-            return <SocialLink href={item.url} icon={item.icon} aria-label={`Link of ${item.name}`} count={item.count} label="followers" />
-          })
-        }
+      {
+        ENABLED && (
+          <>
+            <SectionDivider />
+            <div class="py-8 pb-10 px-6 max-md:px-6">
+              <div class="px-2 max-md:px-0">
+                <h2 class="text-2xl sm:text-3xl">聚光灯</h2>
+                <p class="text-muted-foreground mb-6 mt-1">最近的一些 github 贡献：</p>
+              </div>
+              <GithubContributions username={GITHUB_USERNAME} tooltipEnabled={TOOLTIP_ENABLED} client:load transition:animate="none" />
+            </div>
+          </>
+        )
+      }
+      {
+        SKILLS_ENABLED && SKILLS_DATA.length > 0 && (
+          <>
+            <SectionDivider />
+            <div class="py-8 pb-10 px-6 max-md:px-6">
+              <div class="px-2 max-md:px-0">
+                <h2 class="text-2xl sm:text-3xl tracking-tight">技术</h2>
+                <p class="text-muted-foreground mb-6 mt-1">以下是我在使用的一些技术：</p>
+              </div>
+              <SkillsShowcase skillsData={SKILLS_DATA} />
+            </div>
+          </>
+        )
+      }
+      <SectionDivider />
+      <div class="py-8 pb-10 px-6 sm:px-8">
+        <h2 class="text-2xl sm:text-3xl tracking-tight">随笔</h2>
+        <p class="text-muted-foreground mb-6 mt-1">
+          {hasPinnedPosts ? `置顶的` : '最新的'}
+          {showPosts.length} 篇随笔：
+        </p>
+        <List posts={showPosts} {type} coverLayout={POSTS_CONFIG.homePageConfig?.coverLayout} />
       </div>
-    </div>
-    {
-      ENABLED && (
-        <>
-          <SectionDivider />
-          <div class="py-8 pb-10 px-6 max-md:px-6">
-            <div class="px-2 max-md:px-0">
-              <h2 class="text-2xl sm:text-3xl">聚光灯</h2>
-              <p class="text-muted-foreground mb-6 mt-1">最近的一些 github 贡献：</p>
-            </div>
-            <GithubContributions username={GITHUB_USERNAME} tooltipEnabled={TOOLTIP_ENABLED} client:load transition:animate="none" />
-          </div>
-        </>
-      )
-    }
-    {
-      SKILLS_ENABLED && SKILLS_DATA.length > 0 && (
-        <>
-          <SectionDivider />
-          <div class="py-8 pb-10 px-6 max-md:px-6">
-            <div class="px-2 max-md:px-0">
-              <h2 class="text-2xl sm:text-3xl tracking-tight">技术</h2>
-              <p class="text-muted-foreground mb-6 mt-1">以下是我在使用的一些技术：</p>
-            </div>
-            <SkillsShowcase skillsData={SKILLS_DATA} />
-          </div>
-        </>
-      )
-    }
-    <SectionDivider />
-    <div class="py-8 pb-10 px-6 sm:px-8">
-      <h2 class="text-2xl sm:text-3xl tracking-tight">随笔</h2>
-      <p class="text-muted-foreground mb-6 mt-1">
-        {hasPinnedPosts ? `置顶的` : '最新的'}
-        {showPosts.length} 篇随笔：
-      </p>
-      <List posts={showPosts} {type} coverLayout={POSTS_CONFIG.homePageConfig?.coverLayout} />
     </div>
   </div>
 </Layout>
