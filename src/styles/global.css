@@ -168,58 +168,38 @@
 
 /* ===== 动画效果 ===== */
 @layer base {
-  .fade-up {
-    opacity: 0;
-    animation: fadeUp 300ms;
-    animation-fill-mode: forwards;
-    will-change: transform, opacity;
-    transform: translate3d(0, 2rem, 0);
-
-    /* Safari 优化 */
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
-    -webkit-perspective: 1000px;
-    perspective: 1000px;
-    -webkit-transform-style: preserve-3d;
-    transform-style: preserve-3d;
-
-    /* 强制硬件加速 */
-    -webkit-transform: translate3d(0, 2rem, 0);
-    -moz-transform: translate3d(0, 2rem, 0);
-    -ms-transform: translate3d(0, 2rem, 0);
-
-    /* 减少重绘 */
-    contain: layout style paint;
-  }
-
-  @keyframes fadeUp {
+  @keyframes fade-in-up {
     0% {
+      transform: translateY(2rem);
       opacity: 0;
-      transform: translate3d(0, 2rem, 0);
-      -webkit-transform: translate3d(0, 2rem, 0);
-      -moz-transform: translate3d(0, 2rem, 0);
-      -ms-transform: translate3d(0, 2rem, 0);
     }
     100% {
+      transform: translateY(0);
       opacity: 1;
-      transform: translate3d(0, 0, 0);
-      -webkit-transform: translate3d(0, 0, 0);
-      -moz-transform: translate3d(0, 0, 0);
-      -ms-transform: translate3d(0, 0, 0);
+    }
+  }
+  .fade-up {
+    opacity: 0;
+    animation: 300ms fade-in-up;
+    animation-fill-mode: forwards;
+  }
+
+  @media (prefers-reduced-motion) {
+    .fade-up {
+      opacity: 0;
+      animation: 100ms fade-in-up;
+      animation-fill-mode: forwards;
     }
   }
 
   .animation-delay-100 {
     animation-delay: 100ms;
-    -webkit-animation-delay: 100ms;
   }
   .animation-delay-150 {
     animation-delay: 150ms;
-    -webkit-animation-delay: 150ms;
   }
   .animation-delay-200 {
     animation-delay: 200ms;
-    -webkit-animation-delay: 200ms;
   }
 
   /* 主题切换动画 */
