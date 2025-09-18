@@ -1,5 +1,4 @@
 ---
-import { ClientRouter } from 'astro:transitions'
 import { SITE } from '~/config'
 
 type Props = {
@@ -72,5 +71,3 @@ const ogImage = new URL(image || SITE.ogImage, Astro.url)
 <link rel="stylesheet" href="/fonts/ShangguSansSC-VF/result.css" />
 
 <script is:inline src="https://cloud.umami.is/script.js" data-website-id="5237dab1-1d06-4422-a5f9-9f54ef14f434"></script>
-
-<ClientRouter fallback="none" />
