@@ -15,7 +15,7 @@ const recommendText = POSTS_CONFIG.recommendText
 ---
 
 <article class="relative">
-  <div class="fade-up animation-delay-100">
+  <div class="fade-up">
     {
       frontmatter.cover && (
         <div class="w-full">
@@ -85,7 +85,7 @@ const recommendText = POSTS_CONFIG.recommendText
     </header>
   </div>
 
-  <main class="px-6 sm:px-8 pb-10 max-w-3xl mx-auto fade-up animation-delay-150">
+  <main class="px-6 sm:px-8 pb-10 max-w-3xl mx-auto fade-up">
     <Prose>
       <slot />
     </Prose>
