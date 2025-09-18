@@ -181,35 +181,16 @@
 
   .fade-up {
     opacity: 0;
-    animation: 300ms fade-in-up;
+    animation: 600ms fade-in-up;
     animation-fill-mode: forwards;
     will-change: transform, opacity;
-  }
-
-  /* 包含图片的元素延迟动画，避免与LQIP同时渲染 */
-  .fade-up.with-image {
-    animation-delay: 200ms;
-  }
-
-  /* 页面跳转时延迟所有动画，让页面先稳定渲染 */
-  .navigation-transition .fade-up {
-    animation-delay: 150ms;
-  }
-
-  .navigation-transition .fade-up.with-image {
-    animation-delay: 300ms;
   }
 
   @media (prefers-reduced-motion) {
     .fade-up {
       opacity: 0;
-      animation: 100ms fade-in-up;
+      animation: 300ms fade-in-up;
       animation-fill-mode: forwards;
-    }
-
-    .fade-up.with-image,
-    .navigation-transition .fade-up {
-      animation-delay: 50ms;
     }
   }
 
