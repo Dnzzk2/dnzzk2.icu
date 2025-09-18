@@ -183,7 +183,6 @@
     opacity: 0;
     animation: 600ms fade-in-up;
     animation-fill-mode: forwards;
-    will-change: transform, opacity;
   }
 
   @media (prefers-reduced-motion) {
