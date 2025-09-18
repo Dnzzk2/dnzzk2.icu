@@ -185,14 +185,6 @@
     animation-fill-mode: forwards;
   }
 
-  @media (prefers-reduced-motion) {
-    .fade-up {
-      opacity: 0;
-      animation: 300ms fade-in-up;
-      animation-fill-mode: forwards;
-    }
-  }
-
   /* 主题切换动画 */
   html.disable-transition,
   html.disable-transition * {
