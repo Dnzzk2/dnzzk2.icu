@@ -126,65 +126,70 @@ const getRelativeIndentClass = (depth: number) => {
 
   const state = new MobileTOCState()
 
-  class HeadingRegions {
-    static build(): void {
+  class MobileHeadingObserver {
+    private static observer: IntersectionObserver | null = null
+    private static currentActiveHeading: string | null = null
+
+    static init(): void {
       // 获取所有标题，排除脚注
-      state.headings = Array.from(document.querySelectorAll<HTMLElement>('h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]')).filter(
+      state.headings = Array.from(document.querySelectorAll<HTMLElement>('h1[id], h2[id], h3[id], h4[id]')).filter(
         (heading) => heading.id !== 'footnote-label'
       )
 
-      if (state.headings.length === 0) {
-        state.regions = []
-        return
-      }
+      if (state.headings.length === 0) return
 
-      // 构建标题区域映射 - 使用与点击跳转相同的计算方式
-      state.regions = state.headings
-        .filter((heading) => heading.id !== 'footnote-label')
-        .map((heading, index) => {
-          const nextHeading = state.headings[index + 1]
+      const headingLinks = document.querySelectorAll('.mobile-toc-item')
 
-          // 使用getBoundingClientRect + scrollY获取文档中的绝对位置
+      if (!headingLinks.length) return
+
+      // 创建与桌面端相同的 IntersectionObserver
+      this.observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.intersectionRatio > 0) {
+              const id = entry.target.id
+              if (this.currentActiveHeading === id) return
+
+              this.currentActiveHeading = id
+              state.activeIds = [id]
+              MobileTOCLinks.updateActiveHeading(id)
+            }
+          })
+        },
+        {
+          // 使用与桌面端相同的检测参数
+          rootMargin: '-80px 0px -85% 0px',
+          threshold: [0, 1],
+        }
+      )
+
+      // 观察所有标题
+      state.headings.forEach((heading) => this.observer?.observe(heading))
+
+      // 页面加载时检查当前可见的标题
+      setTimeout(() => {
+        const visibleHeading = state.headings.find((heading) => {
           const rect = heading.getBoundingClientRect()
-          const documentTop = rect.top + window.scrollY
-
-          const nextDocumentTop = nextHeading
-            ? nextHeading.getBoundingClientRect().top + window.scrollY
-            : document.documentElement.scrollHeight
-
-          return {
-            id: heading.id,
-            start: documentTop - 85,
-            end: nextDocumentTop - 85,
-          }
+          return rect.top > 10 && rect.top < window.innerHeight * 0.33
         })
+
+        if (visibleHeading) {
+          state.activeIds = [visibleHeading.id]
+        } else if (state.headings.length > 0) {
+          // 如果没有可见标题，显示Overview
+          state.activeIds = []
+        }
+
+        MobileTOCLinks.updateActiveHeading(state.activeIds[0] || '')
+      }, 100)
     }
 
-    static getVisibleIds(): string[] {
-      if (state.headings.length === 0) return []
-
-      const scrollTop = window.scrollY
-
-      // 如果在页面顶部（滚动位置小于第一个标题位置），显示 Overview
-      if (scrollTop < state.regions[0]?.start) {
-        return []
+    static cleanup(): void {
+      if (this.observer) {
+        this.observer.disconnect()
+        this.observer = null
       }
-
-      // 找到当前滚动位置对应的标题
-      const activeRegion = state.regions.find((region) => scrollTop >= region.start && scrollTop < region.end)
-
-      if (activeRegion) {
-        return [activeRegion.id]
-      }
-
-      // 如果滚动到最底部，返回最后一个标题
-      const documentHeight = document.documentElement.scrollHeight
-      const windowHeight = window.innerHeight
-      if (scrollTop + windowHeight >= documentHeight - 10) {
-        return [state.regions[state.regions.length - 1]?.id].filter(Boolean)
-      }
-
-      return []
+      this.currentActiveHeading = null
     }
   }
 
@@ -204,31 +209,42 @@ const getRelativeIndentClass = (depth: number) => {
   }
 
   class MobileTOCLinks {
-    static update(headingIds: string[]): void {
+    static updateActiveHeading(activeId: string): void {
       if (!state.listElement || !state.currentSectionText) return
 
+      const headingLinks = state.listElement.querySelectorAll('.mobile-toc-item')
+      const headingNumbers = state.listElement.querySelectorAll('.mobile-toc-number')
+
       // 重置所有项目状态
-      state.listElement.querySelectorAll('.mobile-toc-item').forEach((item) => {
-        const tocItem = item as HTMLElement
+      headingLinks.forEach((link) => {
+        const tocItem = link as HTMLElement
         tocItem.classList.remove('text-primary', 'font-semibold')
         tocItem.classList.add('text-foreground/70')
       })
 
-      state.listElement.querySelectorAll('.mobile-toc-number').forEach((number) => {
+      headingNumbers.forEach((number) => {
         const tocNumber = number as HTMLElement
         tocNumber.classList.remove('text-primary', 'font-semibold')
         tocNumber.classList.add('text-primary/40')
       })
 
+      // 更新当前章节文本
+      let textToShow = INITIAL_OVERVIEW_TEXT
+
       // 高亮当前活跃项
-      if (headingIds.length > 0) {
-        const activeId = headingIds[0]
+      if (activeId) {
         const activeItem = state.listElement.querySelector(`[data-heading-id="${activeId}"]`) as HTMLElement
         const activeNumber = state.listElement.querySelector(`[data-order="${this.getOrderByHeadingId(activeId)}"]`) as HTMLElement
 
         if (activeItem) {
           activeItem.classList.remove('text-foreground/70')
           activeItem.classList.add('text-primary', 'font-semibold')
+
+          // 获取标题文本
+          const cleanText = activeItem.dataset.headingText
+          if (cleanText) {
+            textToShow = cleanText
+          }
         }
 
         if (activeNumber) {
@@ -239,31 +255,12 @@ const getRelativeIndentClass = (depth: number) => {
         this.scrollToActive(activeId)
       }
 
-      this.updateCurrentSectionText(headingIds)
+      state.currentSectionText.textContent = textToShow
     }
 
     static getOrderByHeadingId(headingId: string): string {
       const item = state.listElement?.querySelector(`[data-heading-id="${headingId}"]`)
       return item?.getAttribute('data-heading-text') || ''
-    }
-
-    static updateCurrentSectionText(headingIds: string[]): void {
-      if (!state.currentSectionText) return
-
-      let textToShow = INITIAL_OVERVIEW_TEXT
-
-      // 只有当确实有活跃标题时才更新文本
-      if (headingIds.length > 0) {
-        const activeId = headingIds[0]
-        const activeItem = state.listElement?.querySelector(`[data-heading-id="${activeId}"]`) as HTMLElement
-        const cleanText = activeItem?.dataset.headingText
-
-        if (cleanText) {
-          textToShow = cleanText
-        }
-      }
-
-      state.currentSectionText.textContent = textToShow
     }
 
     static scrollToActive(activeHeadingId: string): void {
@@ -343,11 +340,32 @@ const getRelativeIndentClass = (depth: number) => {
             return
           }
 
-          // 如果目录是展开状态，关闭目录并使用原生跳转
+          // 如果目录是展开状态，先关闭目录，然后手动跳转
           if (tocContent && tocArrow) {
+            e.preventDefault() // 阻止原生跳转
+
+            // 先关闭目录
             isOpen = false
             tocContent.style.maxHeight = '0'
             tocArrow.style.transform = 'rotate(0deg)'
+
+            // 等待目录关闭动画完成后再跳转
+            setTimeout(() => {
+              const href = (item as HTMLElement).getAttribute('href')
+              if (href) {
+                const target = document.querySelector(href)
+                if (target) {
+                  const rect = target.getBoundingClientRect()
+                  const documentTop = rect.top + window.scrollY
+                  const scrollPosition = documentTop - 80 // 距离顶部80px
+
+                  window.scrollTo({
+                    top: Math.max(0, scrollPosition),
+                    behavior: 'smooth',
+                  })
+                }
+              }
+            }, 300) // 等待目录关闭动画完成
           }
         })
       })
@@ -391,14 +409,6 @@ const getRelativeIndentClass = (depth: number) => {
         }
 
         this.lastScrollY = currentScrollY
-
-        const newActiveIds = HeadingRegions.getVisibleIds()
-
-        if (JSON.stringify(newActiveIds) !== JSON.stringify(state.activeIds)) {
-          state.activeIds = newActiveIds
-          MobileTOCLinks.update(state.activeIds)
-        }
-
         this.scrollRAF = null
       })
     }
@@ -407,21 +417,15 @@ const getRelativeIndentClass = (depth: number) => {
       if (this.resizeRAF) return
 
       this.resizeRAF = requestAnimationFrame(() => {
-        HeadingRegions.build()
-
-        const newActiveIds = HeadingRegions.getVisibleIds()
-        if (JSON.stringify(newActiveIds) !== JSON.stringify(state.activeIds)) {
-          state.activeIds = newActiveIds
-          MobileTOCLinks.update(state.activeIds)
-        }
-
+        // 重新初始化观察器
+        MobileHeadingObserver.cleanup()
+        MobileHeadingObserver.init()
         this.resizeRAF = null
       })
     }
 
     static init(): void {
       state.reset()
-      HeadingRegions.build()
 
       // 初始化滚动位置
       this.lastScrollY = window.scrollY
@@ -468,13 +472,8 @@ const getRelativeIndentClass = (depth: number) => {
         this.observer.observe(sentinel)
       }
 
-      if (state.headings.length === 0) {
-        state.currentSectionText.textContent = INITIAL_OVERVIEW_TEXT
-        return
-      }
-
-      state.activeIds = HeadingRegions.getVisibleIds()
-      MobileTOCLinks.update(state.activeIds)
+      // 初始化标题观察器和交互
+      MobileHeadingObserver.init()
       MobileTOCLinks.setupInteraction()
 
       // 使用 passive 监听器优化性能
@@ -515,6 +514,9 @@ const getRelativeIndentClass = (depth: number) => {
         window.removeEventListener('resize', this.boundHandleResize)
         this.boundHandleResize = null
       }
+
+      // 清理标题观察器
+      MobileHeadingObserver.cleanup()
 
       state.activeIds = []
       state.headings = []
