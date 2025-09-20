@@ -295,6 +295,12 @@ const getRelativeIndentClass = (depth: number) => {
 
       let isOpen = false
 
+      // 获取目录当前状态
+      const isTocOpen = () => {
+        if (!tocContent) return false
+        return tocContent.style.maxHeight !== '0px' && tocContent.style.maxHeight !== '' && tocContent.style.maxHeight !== '0'
+      }
+
       if (toggleButton && tocContent && tocArrow) {
         toggleButton.addEventListener('click', () => {
           isOpen = !isOpen
@@ -317,36 +323,32 @@ const getRelativeIndentClass = (depth: number) => {
 
       if (!state.listElement) return
 
-      // 点击Overview链接时关闭
+      // 目录链接点击处理
       state.listElement.querySelectorAll('.mobile-toc-item').forEach((item) => {
         item.addEventListener('click', (e) => {
-          e.preventDefault()
-          const href = (item as HTMLElement).getAttribute('href')
-          if (!href) return
+          // 如果目录是收缩状态，只打开目录，不跳转
+          if (!isTocOpen()) {
+            e.preventDefault()
 
-          const target = document.querySelector(href)
-          if (!target) return
+            // 打开目录
+            if (tocContent && tocArrow) {
+              isOpen = true
+              MobileTOCController.setRecentlyOpened(true)
+              setTimeout(() => MobileTOCController.setRecentlyOpened(false), 800)
 
-          // 手动关闭Overview
-          if (isOpen && tocContent && tocArrow) {
+              tocContent.style.maxHeight = '31vh'
+              tocArrow.style.transform = 'rotate(180deg)'
+              setTimeout(() => TOCScrollMask.update(), 100)
+            }
+            return
+          }
+
+          // 如果目录是展开状态，关闭目录并使用原生跳转
+          if (tocContent && tocArrow) {
             isOpen = false
             tocContent.style.maxHeight = '0'
             tocArrow.style.transform = 'rotate(0deg)'
           }
-
-          // 平滑滚动到目标
-          setTimeout(() => {
-            // 方法1: 使用 getBoundingClientRect() + 当前滚动位置
-            const rect = target.getBoundingClientRect()
-            const documentTop = rect.top + window.scrollY
-
-            const scrollPosition = documentTop - 80 // 让标题距离顶部80px
-
-            window.scrollTo({
-              top: Math.max(0, scrollPosition),
-              behavior: 'smooth',
-            })
-          }, 300) // 等待关闭动画
         })
       })
 
