@@ -200,29 +200,63 @@ const getRelativeIndentClass = (depth: number) => {
 
       this.observer = new IntersectionObserver(
         (entries) => {
-          entries.forEach((entry) => {
-            if (entry.intersectionRatio > 0) {
-              const id = entry.target.id
-              this.updateActiveHeading(id)
-            }
-          })
+          // 收集所有可见的标题
+          const visibleHeadings = entries
+            .filter((entry) => entry.intersectionRatio > 0)
+            .map((entry) => ({
+              id: entry.target.id,
+              element: entry.target as HTMLElement,
+              ratio: entry.intersectionRatio,
+              rect: entry.target.getBoundingClientRect(),
+            }))
+
+          if (visibleHeadings.length > 0) {
+            // 优先选择最接近视窗顶部的标题
+            const bestHeading = visibleHeadings.reduce((best, current) => {
+              const bestDistance = Math.abs(best.rect.top - 80)
+              const currentDistance = Math.abs(current.rect.top - 80)
+              return currentDistance < bestDistance ? current : best
+            })
+
+            this.updateActiveHeading(bestHeading.id)
+          } else {
+            // 没有可见标题时，根据滚动位置选择最合适的标题
+            this.updateActiveHeadingByScroll()
+          }
         },
         {
           rootMargin: '-80px 0px -85% 0px',
-          threshold: [0, 1],
+          threshold: [0, 0.1, 0.25, 0.5, 0.75, 1],
         }
       )
 
       this.headings.forEach((heading) => this.observer?.observe(heading))
 
       // 初始检查
-      setTimeout(() => {
-        const visibleHeading = this.headings.find((heading) => {
-          const rect = heading.getBoundingClientRect()
-          return rect.top > 10 && rect.top < window.innerHeight * 0.33
-        })
-        this.updateActiveHeading(visibleHeading?.id || '')
-      }, 100)
+      setTimeout(() => this.updateActiveHeadingByScroll(), 100)
+    }
+
+    // 根据滚动位置更新活跃标题
+    private static updateActiveHeadingByScroll(): void {
+      if (this.headings.length === 0) return
+
+      const scrollTop = window.scrollY
+      let activeHeading: HTMLElement | null = null
+
+      // 从后往前查找，选择已经滚过的最后一个标题
+      for (let i = this.headings.length - 1; i >= 0; i--) {
+        const heading = this.headings[i]
+        const rect = heading.getBoundingClientRect()
+        const headingTop = rect.top + scrollTop
+
+        if (headingTop <= scrollTop + 120) {
+          activeHeading = heading
+          break
+        }
+      }
+
+      // 如果没找到合适的标题，显示Overview（传入空字符串）
+      this.updateActiveHeading(activeHeading?.id || '')
     }
 
     // 初始化 sticky 观察器
@@ -326,6 +360,8 @@ const getRelativeIndentClass = (depth: number) => {
 
     // 初始化滚动处理
     private static initScrollHandler(): void {
+      let headingUpdateRAF: number | null = null
+
       const handleScroll = () => {
         if (this.scrollRAF) return
 
@@ -360,6 +396,17 @@ const getRelativeIndentClass = (depth: number) => {
               this.setOpen(false)
               this.recentlyOpened = false // 关闭时清除免疫期
             }
+          }
+
+          // 快速滚动时，额外更新活跃标题（防抖）
+          if (Math.abs(scrollDelta) > 20) {
+            if (headingUpdateRAF) {
+              cancelAnimationFrame(headingUpdateRAF)
+            }
+            headingUpdateRAF = requestAnimationFrame(() => {
+              this.updateActiveHeadingByScroll()
+              headingUpdateRAF = null
+            })
           }
 
           this.lastScrollY = currentScrollY
@@ -403,17 +450,20 @@ const getRelativeIndentClass = (depth: number) => {
 
       if (activeId) {
         const activeItem = this.listElement.querySelector(`[data-heading-id="${activeId}"]`) as HTMLElement
-        const activeNumber = this.listElement.querySelector(`[data-order]`) as HTMLElement
 
         if (activeItem) {
           activeItem.classList.remove('text-foreground/70')
           activeItem.classList.add('text-primary', 'font-semibold')
           textToShow = activeItem.dataset.headingText || textToShow
-        }
 
-        if (activeNumber) {
-          activeNumber.classList.remove('text-primary/40')
-          activeNumber.classList.add('text-primary', 'font-semibold')
+          // 查找对应的数字标记（通过父元素查找）
+          const parentLi = activeItem.closest('li')
+          const activeNumber = parentLi?.querySelector('.mobile-toc-number') as HTMLElement
+
+          if (activeNumber) {
+            activeNumber.classList.remove('text-primary/40')
+            activeNumber.classList.add('text-primary', 'font-semibold')
+          }
         }
 
         this.scrollToActiveInTOC(activeId)
