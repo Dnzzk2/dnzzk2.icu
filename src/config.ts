@@ -66,7 +66,7 @@ export const SOCIAL_LINKS: SocialLink[] = [
     name: 'github',
     url: 'https://github.com/Dnzzk2',
     icon: 'icon-[ri--github-fill]',
-    count: 11,
+    count: 14,
   },
   {
     name: 'qq',
