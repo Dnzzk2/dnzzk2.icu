@@ -1,0 +1,107 @@
+@font-face {
+  font-family: 'Numbers';
+  src: url('/fonts/GeistVF.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'CJKEmDash';
+  unicode-range: U+2014, U+2E3A-2E3B;
+  src: url('/fonts/ZhudouSansVF-subset.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Lexend';
+  src: url('/fonts/Lexend-VariableFont_wght.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GeistMono';
+  src: url('/fonts/GeistMono[wght].woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+
+:root {
+  --font-lexend: 'Lexend', 'CJKEmDash', 'Numbers', 'ShangguSansSC-VF', sans-serif;
+  --font-sans: 'CJKEmDash', 'Numbers', 'ShangguSansSC-VF', sans-serif;
+  --font-geist-mono: 'GeistMono', 'Input Mono', 'Fira Code', 'ShangguSansSC-VF', monospace;
+  --background: 255 100% 100%;
+  --foreground: 225 15% 12%;
+  --scrollbar: 220 20% 80%;
+  --scrollbar-bg: 220 25% 95%;
+  --belonging-color: #9ea0a6;
+  --muted-foreground: 225 10% 40%;
+}
+
+.dark {
+  --background: 240 10% 4%;
+  --foreground: 0 0% 98%;
+  --scrollbar: 240 10% 30%;
+  --scrollbar-bg: 240 10% 15%;
+  --belonging-color: #9ea0a6;
+  --muted-foreground: 240 5% 64.9%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: light;
+  background-color: hsl(var(--background));
+  font-family: var(--font-sans);
+  scroll-behavior: smooth;
+  @variant dark {
+    color-scheme: dark;
+  }
+}
+
+/* 当根元素带有 .dark 类时，启用深色 UA 颜色方案 */
+.dark html {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--background));
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 0px 24px;
+}
+
+/* 滚动条（可选） */
+* {
+  scrollbar-color: hsl(var(--scrollbar)) hsl(var(--scrollbar-bg));
+  scrollbar-width: thin;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-lexend);
+}
+
+a {
+  text-underline-offset: 2px;
+  color: inherit;
+}
+
+.belonging {
+  margin-top: 10px;
+  color: var(--belonging-color);
+  font-size: 12px;
+}
+
+header {
+  margin-top: 80px;
+  margin-bottom: 40px;
+}
+
+.subtitle {
+  color: hsl(var(--muted-foreground));
+  line-height: 1.75;
+}
