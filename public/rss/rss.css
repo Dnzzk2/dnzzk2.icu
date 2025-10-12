@@ -24,6 +24,14 @@
   font-display: swap;
 }
 
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  scrollbar-color: hsl(var(--scrollbar)) hsl(var(--scrollbar-bg));
+  scrollbar-width: thin;
+}
+
 :root {
   --font-lexend: 'Lexend', 'CJKEmDash', 'Numbers', 'ShangguSansSC-VF', sans-serif;
   --font-sans: 'CJKEmDash', 'Numbers', 'ShangguSansSC-VF', sans-serif;
@@ -34,6 +42,8 @@
   --scrollbar-bg: 220 25% 95%;
   --belonging-color: #9ea0a6;
   --muted-foreground: 225 10% 40%;
+  --border: 220 20% 90%;
+  --accent: 220 25% 94%;
 }
 
 .dark {
@@ -43,6 +53,8 @@
   --scrollbar-bg: 240 10% 15%;
   --belonging-color: #9ea0a6;
   --muted-foreground: 240 5% 64.9%;
+  --border: 240 3.7% 15.9%;
+  --accent: 240 3.7% 15.9%;
 }
 
 * {
@@ -73,16 +85,15 @@ body {
   padding: 0px 24px;
 }
 
-/* 滚动条（可选） */
-* {
-  scrollbar-color: hsl(var(--scrollbar)) hsl(var(--scrollbar-bg));
-  scrollbar-width: thin;
-}
-
 h1,
 h2,
 h3 {
   font-family: var(--font-lexend);
+}
+
+h1 {
+  font-size: 48px;
+  margin-bottom: 10px;
 }
 
 a {
@@ -97,8 +108,9 @@ a {
 }
 
 header {
-  margin-top: 80px;
-  margin-bottom: 40px;
+  padding-top: 80px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid hsl(var(--border));
 }
 
 .subtitle {
