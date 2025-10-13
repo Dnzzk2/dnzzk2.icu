@@ -92,7 +92,7 @@ h3 {
 }
 
 h1 {
-  font-size: 48px;
+  font-size: 32px;
   margin-bottom: 10px;
 }
 
@@ -116,4 +116,36 @@ header {
 .subtitle {
   color: hsl(var(--muted-foreground));
   line-height: 1.75;
+  margin-bottom: 10px;
+}
+
+.button {
+  display: inline-flex;
+  background-color: hsl(var(--accent));
+  color: hsl(var(--foreground));
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+  height: 32px;
+  border-radius: 9999px;
+  padding: 0 16px;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease-in-out;
+  white-space: nowrap;
+}
+
+.button:hover {
+  background-color: hsl(var(--border));
+}
+
+.button svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }

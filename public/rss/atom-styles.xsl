@@ -45,6 +45,13 @@
           <p class="subtitle">
             <xsl:value-of select="atom:subtitle" />
           </p>
+          <a href="" class="button">
+            <span>Visit site</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7 17l10-10M13 7h4v4" />
+              <path d="M17 7v0" />
+            </svg>
+          </a>
         </header>
       </body>
     </html>
