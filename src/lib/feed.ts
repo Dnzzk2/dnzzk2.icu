@@ -221,6 +221,7 @@ export async function generateRSS20(): Promise<string> {
       <title>${escapeXml(post.data.title)}</title>
       <link>${siteUrl}/posts/${post.id}</link>
       <guid>${siteUrl}/posts/${post.id}</guid>
+      <updated>${(post.data.updatedDate || post.data.pubDate).toISOString()}</updated>
       <pubDate>${post.data.pubDate.toISOString()}</pubDate>
       <description><![CDATA[${post.data.description || ''}]]></description>
       <content:encoded><![CDATA[${post.htmlContent}]]></content:encoded>
