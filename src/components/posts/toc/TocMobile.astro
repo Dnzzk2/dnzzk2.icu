@@ -132,8 +132,6 @@ const getRelativeIndentClass = (depth: number) => {
       this.initStickyObserver()
       this.initInteractions()
       this.initScrollHandler()
-
-      console.log('MobileTOC 初始化完成')
     }
 
     // 获取 DOM 元素
@@ -157,12 +155,6 @@ const getRelativeIndentClass = (depth: number) => {
 
       // 初始化展开状态
       this.isOpen = this.getOpenStateFromDOM()
-
-      console.log('元素初始化完成:', {
-        headings: this.headings.length,
-        isOpen: this.isOpen,
-        lastScrollY: this.lastScrollY,
-      })
     }
 
     // 从 DOM 获取展开状态
@@ -177,7 +169,6 @@ const getRelativeIndentClass = (depth: number) => {
       if (!this.tocContent || !this.tocArrow) return
 
       this.isOpen = open
-      console.log('设置展开状态:', open)
 
       if (open) {
         this.tocContent.style.maxHeight = '31vh'
@@ -275,8 +266,6 @@ const getRelativeIndentClass = (depth: number) => {
           const wasStuck = this.isStuck
           this.isStuck = !entry.isIntersecting
 
-          console.log('Sticky 状态变化:', { wasStuck, isStuck: this.isStuck })
-
           // 切换定位模式
           if (this.isStuck) {
             // 浮层模式
@@ -295,7 +284,6 @@ const getRelativeIndentClass = (depth: number) => {
 
             // 关键：从 sticky 回到 static 时重置所有状态
             if (wasStuck) {
-              console.log('从 sticky 回到 static，重置状态')
               this.lastScrollY = window.scrollY
               this.recentlyOpened = false
             }
@@ -374,25 +362,12 @@ const getRelativeIndentClass = (depth: number) => {
           const timeSinceOpened = Date.now() - this.lastOpenTime
           const isInImmunityPeriod = this.recentlyOpened && timeSinceOpened < 200 // 缩短免疫期到200ms
 
-          console.log('滚动检测:', {
-            currentScrollY,
-            lastScrollY: this.lastScrollY,
-            scrollDelta,
-            isScrollingDown,
-            isStuck: this.isStuck,
-            isOpen: this.isOpen,
-            recentlyOpened: this.recentlyOpened,
-            timeSinceOpened,
-            isInImmunityPeriod,
-          })
-
           // 只在 static 状态下检测向下滚动
           if (!this.isStuck && isScrollingDown && this.isOpen) {
             // 免疫期内只防止微小的滚动（<10px），允许正常滚动
             const shouldClose = !isInImmunityPeriod || Math.abs(scrollDelta) > 10
 
             if (shouldClose) {
-              console.log('触发自动关闭，滚动距离:', Math.abs(scrollDelta))
               this.setOpen(false)
               this.recentlyOpened = false // 关闭时清除免疫期
             }
@@ -423,7 +398,6 @@ const getRelativeIndentClass = (depth: number) => {
       this.lastOpenTime = Date.now() // 记录打开时间
       setTimeout(() => {
         this.recentlyOpened = false
-        console.log('免疫期结束')
       }, 800)
     }
 
@@ -511,8 +485,6 @@ const getRelativeIndentClass = (depth: number) => {
 
     // 清理
     static cleanup(): void {
-      console.log('清理 MobileTOC')
-
       if (this.observer) {
         this.observer.disconnect()
         this.observer = null
