@@ -213,13 +213,6 @@ export async function generateRSS20(): Promise<string> {
     <pubDate>${lastBuildDate}</pubDate>
     <lastBuildDate>${lastBuildDate}</lastBuildDate>
     <generator>Astro Litos Theme</generator>
-    <image>
-      <url>${siteUrl}/favicon-192x192.png</url>
-      <title>${escapeXml(title)}</title>
-      <link>${siteUrl}</link>
-      <width>192</width>
-      <height>192</height>
-    </image>
     <atom:link href="${siteUrl}/rss.xml" rel="self" type="application/rss+xml" />
     ${processedPosts
       .map(
@@ -252,8 +245,6 @@ export async function generateAtom10(): Promise<string> {
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>${escapeXml(title)}</title>
   <subtitle>${escapeXml(description)}</subtitle>
-  <icon>${siteUrl}/favicon-192x192.png</icon>
-  <logo>${siteUrl}/favicon-192x192.png</logo>
   <link href="${siteUrl}/atom.xml" rel="self" type="application/atom+xml"/>
   <link href="${siteUrl}" rel="alternate" type="text/html"/>
   <updated>${lastBuildDate}</updated>
