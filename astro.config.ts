@@ -27,4 +27,7 @@ export default defineConfig({
     rehypePlugins,
   },
   integrations: [expressiveCode(), mdx(), react(), sitemap(), robotsTxt()],
+  build: {
+    format: 'file',
+  },
 })
