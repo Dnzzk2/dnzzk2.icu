@@ -1,5 +1,6 @@
 ---
 import { COMMENT_CONFIG } from '~/config'
+import Gitalk from './Gitalk.astro'
 
 interface Props {
   id: string
@@ -17,31 +18,5 @@ if (!enabled || system === 'none') {
 <div class="comment-container mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
   <h3 class="text-xl font-semibold mb-6 text-gray-900 dark:text-gray-100">评论</h3>
 
-  {system === 'gitalk' && <div id="gitalk-container" data-id={id} data-title={title} />}
+  {system === 'gitalk' && <Gitalk id={id} title={title} />}
 </div>
-
-<script>
-  import { COMMENT_CONFIG } from '~/config'
-  const { system, gitalk } = COMMENT_CONFIG
-  if (system === 'gitalk' && gitalk) {
-    import('gitalk/dist/gitalk.css')
-    import('gitalk').then(({ default: Gitalk }) => {
-      const gitalkComment = new Gitalk({
-        clientID: gitalk.clientID,
-        clientSecret: gitalk.clientSecret,
-        repo: gitalk.repo,
-        owner: gitalk.owner,
-        admin: gitalk.admin,
-        language: gitalk.language || 'zh-CN',
-        perPage: gitalk.perPage || 10,
-        pagerDirection: gitalk.pagerDirection || 'last',
-        createIssueManually: gitalk.createIssueManually || false,
-        distractionFreeMode: gitalk.distractionFreeMode || false,
-        enableHotKey: gitalk.enableHotKey !== false,
-        id: document.getElementById('gitalk-container')?.dataset.id || '',
-        title: document.getElementById('gitalk-container')?.dataset.title || '',
-      })
-      gitalkComment.render('gitalk-container')
-    })
-  }
-</script>

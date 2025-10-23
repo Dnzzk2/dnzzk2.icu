@@ -1,0 +1,80 @@
+---
+import { COMMENT_CONFIG } from '~/config'
+
+interface Props {
+  id: string
+  title: string
+}
+
+const { id, title } = Astro.props
+---
+
+<div id="gitalk-container" data-id={id} data-title={title}></div>
+
+<script>
+  import { COMMENT_CONFIG } from '~/config'
+  const { gitalk } = COMMENT_CONFIG
+
+  function initGitalk() {
+    if (!gitalk) return
+
+    import('gitalk/dist/gitalk.css')
+    import('gitalk').then(({ default: Gitalk }) => {
+      const gitalkComment = new Gitalk({
+        clientID: gitalk.clientID,
+        clientSecret: gitalk.clientSecret,
+        repo: gitalk.repo,
+        owner: gitalk.owner,
+        admin: gitalk.admin,
+        language: gitalk.language || 'zh-CN',
+        perPage: gitalk.perPage || 5,
+        pagerDirection: gitalk.pagerDirection || 'last',
+        createIssueManually: gitalk.createIssueManually || false,
+        distractionFreeMode: gitalk.distractionFreeMode || false,
+        enableHotKey: gitalk.enableHotKey !== false,
+        id: document.getElementById('gitalk-container')?.dataset.id || '',
+        title: document.getElementById('gitalk-container')?.dataset.title || '',
+      })
+      gitalkComment.render('gitalk-container')
+    })
+  }
+
+  // 延迟加载函数
+  function lazyLoadGitalk() {
+    const container = document.getElementById('gitalk-container')
+    if (!container) return
+
+    const rect = container.getBoundingClientRect()
+    const windowHeight = window.innerHeight
+
+    // 当容器距离视口顶部50px以内时加载
+    if (rect.top <= windowHeight + 50) {
+      initGitalk()
+      // 移除监听器，避免重复加载
+      window.removeEventListener('scroll', lazyLoadGitalk)
+      window.removeEventListener('resize', lazyLoadGitalk)
+    }
+  }
+
+  // 初始检查
+  lazyLoadGitalk()
+
+  // 监听滚动和窗口大小变化
+  window.addEventListener('scroll', lazyLoadGitalk)
+  window.addEventListener('resize', lazyLoadGitalk)
+
+  // 监听页面导航事件
+  document.addEventListener('astro:page-load', () => {
+    // 重新添加监听器
+    window.addEventListener('scroll', lazyLoadGitalk)
+    window.addEventListener('resize', lazyLoadGitalk)
+    lazyLoadGitalk()
+  })
+</script>
+
+<style is:global>
+  .markdown-body {
+    font-family: 'CJKEmDash', 'Numbers', 'ShangguSansSC-VF', sans-serif !important;
+    font-size: 0.875rem !important;
+  }
+</style>
