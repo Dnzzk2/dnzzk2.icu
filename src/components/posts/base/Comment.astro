@@ -23,7 +23,6 @@ if (!enabled || system === 'none') {
 <script>
   import { COMMENT_CONFIG } from '~/config'
   const { system, gitalk } = COMMENT_CONFIG
-  console.log(gitalk)
   if (system === 'gitalk' && gitalk) {
     import('gitalk/dist/gitalk.css')
     import('gitalk').then(({ default: Gitalk }) => {
