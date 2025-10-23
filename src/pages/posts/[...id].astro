@@ -10,6 +10,7 @@ import { POSTS_CONFIG, SITE } from '~/config'
 import { render } from 'astro:content'
 import { getAllPosts } from '~/lib/data'
 import Comment from '~/components/posts/base/Comment.astro'
+import SectionDivider from '~/components/base/SectionDivider.astro'
 
 export async function getStaticPaths() {
   const sortedPosts = await getAllPosts()
@@ -55,8 +56,9 @@ const PostLayout = layoutMap[layoutKey]
       {posts.length > 1 && <PostNavigation {prev} {next} />}
     </div>
     {hasValidHeadings && <PostFeatures {post} {posts} headings={filterHeadings} />}
-    <div class="px-6 sm:px-8 pb-6 sm:pb-8">
-      <Comment id={post.id} title={frontmatter.title} />
-    </div>
+  </div>
+  <SectionDivider />
+  <div class="px-6 py-6 sm:px-8 pb-6 sm:pb-8">
+    <Comment id={post.id} title={frontmatter.title} />
   </div>
 </Layout>

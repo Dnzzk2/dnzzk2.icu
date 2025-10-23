@@ -15,6 +15,8 @@ const { id, title } = Astro.props
   import { COMMENT_CONFIG } from '~/config'
   const { gitalk } = COMMENT_CONFIG
 
+  let observer: IntersectionObserver | null = null
+
   function initGitalk() {
     if (!gitalk) return
 
@@ -39,42 +41,60 @@ const { id, title } = Astro.props
     })
   }
 
-  // 延迟加载函数
-  function lazyLoadGitalk() {
+  // 使用 Intersection Observer 监听
+  function setupObserver() {
     const container = document.getElementById('gitalk-container')
     if (!container) return
 
-    const rect = container.getBoundingClientRect()
-    const windowHeight = window.innerHeight
+    // 清理之前的观察器
+    if (observer) {
+      observer.disconnect()
+    }
 
-    // 当容器距离视口顶部50px以内时加载
-    if (rect.top <= windowHeight + 50) {
-      initGitalk()
-      // 移除监听器，避免重复加载
-      window.removeEventListener('scroll', lazyLoadGitalk)
-      window.removeEventListener('resize', lazyLoadGitalk)
+    observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            initGitalk()
+            observer?.disconnect()
+            observer = null
+          }
+        })
+      },
+      {
+        rootMargin: '300px',
+        threshold: 0,
+      }
+    )
+
+    observer.observe(container)
+  }
+
+  // 清理函数
+  function cleanup() {
+    if (observer) {
+      observer.disconnect()
+      observer = null
     }
   }
 
   // 初始检查
-  lazyLoadGitalk()
-
-  // 监听滚动和窗口大小变化
-  window.addEventListener('scroll', lazyLoadGitalk)
-  window.addEventListener('resize', lazyLoadGitalk)
+  setupObserver()
 
   // 监听页面导航事件
-  document.addEventListener('astro:page-load', () => {
-    // 重新添加监听器
-    window.addEventListener('scroll', lazyLoadGitalk)
-    window.addEventListener('resize', lazyLoadGitalk)
-    lazyLoadGitalk()
-  })
+  document.addEventListener('astro:page-load', setupObserver)
+
+  // 页面卸载时清理
+  document.addEventListener('astro:before-preparation', cleanup)
+  window.addEventListener('beforeunload', cleanup)
 </script>
 
 <style is:global>
   .markdown-body {
     font-family: 'CJKEmDash', 'Numbers', 'ShangguSansSC-VF', sans-serif !important;
     font-size: 0.875rem !important;
+  }
+  .dark .gt-container .gt-meta {
+    border-color: var(--color-border) !important;
   }
 </style>
