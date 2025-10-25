@@ -1,6 +1,4 @@
 ---
-import { COMMENT_CONFIG } from '~/config'
-
 interface Props {
   id: string
   title: string
@@ -16,7 +14,7 @@ const { id, title } = Astro.props
   const { gitalk } = COMMENT_CONFIG
 
   let observer: IntersectionObserver | null = null
-  let isInitialized = false // 防止重复初始化
+  let isInitialized = false
 
   function initGitalk() {
     if (!gitalk || isInitialized) return
@@ -26,6 +24,9 @@ const { id, title } = Astro.props
     import('gitalk').then(({ default: Gitalk }) => {
       const container = document.getElementById('gitalk-container')
       if (!container) return
+
+      const id = container.dataset.id || ''
+      const title = container.dataset.title || ''
 
       const gitalkComment = new Gitalk({
         clientID: gitalk.clientID,
@@ -39,8 +40,8 @@ const { id, title } = Astro.props
         createIssueManually: gitalk.createIssueManually || false,
         distractionFreeMode: gitalk.distractionFreeMode || false,
         enableHotKey: gitalk.enableHotKey !== false,
-        id: container.dataset.id || '',
-        title: container.dataset.title || '',
+        id: id,
+        title: title,
       })
       gitalkComment.render('gitalk-container')
     })
@@ -49,10 +50,7 @@ const { id, title } = Astro.props
   function isElementInViewport(element: Element) {
     const rect = element.getBoundingClientRect()
     const windowHeight = window.innerHeight || document.documentElement.clientHeight
-    return (
-      rect.top <= windowHeight + 300 && // 包含rootMargin
-      rect.bottom >= -300
-    )
+    return rect.top <= windowHeight + 300 && rect.bottom >= -300
   }
 
   function setupObserver() {
@@ -92,6 +90,14 @@ const { id, title } = Astro.props
       observer.disconnect()
       observer = null
     }
+    // 注意：这里不能重置 isInitialized = false，因为我们要在页面切换时重新初始化
+  }
+
+  // 重置函数，在页面切换时调用
+  function resetAndInitialize() {
+    isInitialized = false // 关键：重置初始化状态
+    cleanup()
+    setupObserver()
   }
 
   // 初始设置
@@ -101,8 +107,8 @@ const { id, title } = Astro.props
     setupObserver()
   }
 
-  // 监听页面导航事件
-  document.addEventListener('astro:page-load', setupObserver)
+  // 监听 Astro 页面导航事件 - 关键！
+  document.addEventListener('astro:page-load', resetAndInitialize)
 
   // 页面卸载时清理
   document.addEventListener('astro:before-preparation', cleanup)
