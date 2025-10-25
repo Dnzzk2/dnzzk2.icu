@@ -16,12 +16,17 @@ const { id, title } = Astro.props
   const { gitalk } = COMMENT_CONFIG
 
   let observer: IntersectionObserver | null = null
+  let isInitialized = false // 防止重复初始化
 
   function initGitalk() {
-    if (!gitalk) return
+    if (!gitalk || isInitialized) return
+    isInitialized = true
 
     import('gitalk/dist/gitalk.css')
     import('gitalk').then(({ default: Gitalk }) => {
+      const container = document.getElementById('gitalk-container')
+      if (!container) return
+
       const gitalkComment = new Gitalk({
         clientID: gitalk.clientID,
         clientSecret: gitalk.clientSecret,
@@ -34,30 +39,42 @@ const { id, title } = Astro.props
         createIssueManually: gitalk.createIssueManually || false,
         distractionFreeMode: gitalk.distractionFreeMode || false,
         enableHotKey: gitalk.enableHotKey !== false,
-        id: document.getElementById('gitalk-container')?.dataset.id || '',
-        title: document.getElementById('gitalk-container')?.dataset.title || '',
+        id: container.dataset.id || '',
+        title: container.dataset.title || '',
       })
       gitalkComment.render('gitalk-container')
     })
   }
 
-  // 使用 Intersection Observer 监听
+  function isElementInViewport(element: Element) {
+    const rect = element.getBoundingClientRect()
+    const windowHeight = window.innerHeight || document.documentElement.clientHeight
+    return (
+      rect.top <= windowHeight + 300 && // 包含rootMargin
+      rect.bottom >= -300
+    )
+  }
+
   function setupObserver() {
     const container = document.getElementById('gitalk-container')
     if (!container) return
 
     // 清理之前的观察器
-    if (observer) {
-      observer.disconnect()
+    cleanup()
+
+    // 检查是否已经在可视区域内
+    if (isElementInViewport(container)) {
+      initGitalk()
+      return
     }
 
+    // 设置观察器监听
     observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
+          if (entry.isIntersecting && !isInitialized) {
             initGitalk()
-            observer?.disconnect()
-            observer = null
+            cleanup()
           }
         })
       },
@@ -70,7 +87,6 @@ const { id, title } = Astro.props
     observer.observe(container)
   }
 
-  // 清理函数
   function cleanup() {
     if (observer) {
       observer.disconnect()
@@ -78,8 +94,12 @@ const { id, title } = Astro.props
     }
   }
 
-  // 初始检查
-  setupObserver()
+  // 初始设置
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupObserver)
+  } else {
+    setupObserver()
+  }
 
   // 监听页面导航事件
   document.addEventListener('astro:page-load', setupObserver)
@@ -90,11 +110,36 @@ const { id, title } = Astro.props
 </script>
 
 <style is:global>
+  #gitalk-container {
+    min-height: 10px;
+  }
   .markdown-body {
     font-family: 'CJKEmDash', 'Numbers', 'ShangguSansSC-VF', sans-serif !important;
     font-size: 0.875rem !important;
   }
+  .gt-container .gt-comment-body.markdown-body {
+    color: var(--color-text-secondary) !important;
+  }
+
   .dark .gt-container .gt-meta {
     border-color: var(--color-border) !important;
+  }
+  .dark .gt-svg {
+    fill: #a1a1aa !important;
+  }
+  .gt-counts,
+  .gt-user-name {
+    color: var(--color-text-secondary);
+  }
+
+  .dark .gt-header-textarea {
+    background-color: #24273a !important;
+  }
+  .dark .gt-comment-content {
+    background-color: #181926 !important;
+  }
+  .dark .gt-comment-content:hover {
+    -webkit-box-shadow: 0 0.625em 3.75em 0 #0f1d3c !important;
+    box-shadow: 0 0.625em 3.75em #0f1d3c !important;
   }
 </style>
