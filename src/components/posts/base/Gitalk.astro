@@ -90,7 +90,6 @@ const { id, title } = Astro.props
       observer.disconnect()
       observer = null
     }
-    // 注意：这里不能重置 isInitialized = false，因为我们要在页面切换时重新初始化
   }
 
   // 重置函数，在页面切换时调用
@@ -107,10 +106,8 @@ const { id, title } = Astro.props
     setupObserver()
   }
 
-  // 监听 Astro 页面导航事件 - 关键！
   document.addEventListener('astro:page-load', resetAndInitialize)
 
-  // 页面卸载时清理
   document.addEventListener('astro:before-preparation', cleanup)
   window.addEventListener('beforeunload', cleanup)
 </script>
@@ -143,8 +140,13 @@ const { id, title } = Astro.props
     color: var(--color-text-secondary);
   }
 
-  .dark .gt-header-textarea {
-    background-color: #24273a !important;
+  .dark .gt-header-textarea,
+  .dark .gt-popup {
+    background-color: #181926 !important;
+    border-color: var(--color-border) !important;
+  }
+  .dark .gt-container .gt-copyright {
+    border-color: var(--color-border) !important;
   }
   .dark .gt-comment-content {
     background-color: #181926 !important;
