@@ -264,7 +264,7 @@ export const PhotosList: PhotoData[] = [
       type: 'emoji',
       value: '🌠',
     },
-    description: '太卡哇伊(*^ω^*)了',
+    description: '太卡哇伊(*^ω^*)了,cute.',
     date: '2025-06-21',
     travel: '',
     photos: [
