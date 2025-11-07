@@ -8,3 +8,103 @@ tags: ['React']
 cover: 'assets/og.png'
 draft: false
 ---
+
+本文主要收录一些来自于 [React 官网文档](https://zh-hans.react.dev/versions) 的注意项和使用技巧。
+
+## 条件渲染时，不要把数字放在 `&&` 左侧
+
+使用 `&&` 进行条件渲染时，如果左侧是数字 `0`，React 会渲染 `0` 而不是什么都不渲染。
+
+**错误示例：**
+
+```jsx
+{
+  messageCount && <p>New messages</p>
+}
+```
+
+当 `messageCount` 为 `0` 时，页面会显示 `0`。
+
+**正确做法：**
+
+```jsx
+{
+  messageCount > 0 && <p>New messages</p>
+}
+```
+
+将数字转换为布尔值，这样 `0` 时就不会渲染任何内容。
+
+## 正确使用 `key` 属性
+
+使用 `map()` 渲染列表时，必须为每个列表项添加 `key` 属性。
+
+**基本规则：**
+
+- `key` 在兄弟节点间必须唯一（不同数组可以重复）
+- `key` 应该是稳定的，不要动态生成
+- `key` 不会作为 props 传递给组件
+
+**错误示例：**
+
+```jsx
+// ❌ 使用索引作为 key（列表会变化时会有问题）
+{
+  items.map((item, index) => <Item key={index} />)
+}
+
+// ❌ 动态生成 key（每次渲染都重新创建组件）
+{
+  items.map((item) => <Item key={Math.random()} />)
+}
+```
+
+**正确做法：**
+
+```jsx
+// ✅ 使用数据中唯一且稳定的 ID
+{
+  items.map((item) => <Item key={item.id} />)
+}
+
+// ✅ 如果组件需要 ID，单独作为 prop 传递
+{
+  items.map((item) => <Profile key={item.id} userId={item.id} />)
+}
+```
+
+> [!warning] 注意
+> 虽然 React 默认使用索引作为 `key`，但当列表会增删或重排序时，这会导致组件状态错乱。应使用数据中唯一且稳定的标识符。
+
+## 保持组件纯粹
+
+将组件写成纯函数：相同的输入总是产生相同的输出，不修改外部变量。
+
+**纯组件的特征：**
+
+- 根据 props/state 渲染，不修改外部变量
+- 同样的输入，输出一致
+- 不依赖其他组件的渲染时机
+- 不直接修改 props 或 state（用 setState 更新）
+
+**✅ 纯组件示例：**
+
+```jsx
+function Welcome({ name }) {
+  return <h1>Hello, {name}!</h1>
+}
+```
+
+输入相同，输出就相同，可预测、易测试。
+
+**❌ 不纯组件示例：**
+
+```jsx
+let globalCount = 0
+function Counter() {
+  globalCount++ // 修改外部变量
+  return <div>{globalCount}</div>
+}
+```
+
+每次渲染都会修改外部变量，导致行为不可预测，容易出 bug。 逻辑尽量写在 JSX 中，副作用放在事件处理函数或 `useEffect` 中。
