@@ -21,14 +21,14 @@ const recommendText = POSTS_CONFIG.recommendText
         <div class="flex items-center gap-1.5">
           <span class="icon-[ph--calendar-blank] w-4 h-4 opacity-85"></span>
           <time datetime={frontmatter.pubDate.toISOString()}>
-            {formatDate(frontmatter.pubDate)}
+            {formatDate(frontmatter.pubDate, 'chinese')}
           </time>
         </div>
         {
           frontmatter.updatedDate && (
             <div class="flex items-center gap-1.5">
               <span class="icon-[ph--clock-clockwise] w-4 h-4 opacity-85" />
-              <time datetime={frontmatter.updatedDate.toISOString()}>{formatDate(frontmatter.updatedDate)}</time>
+              <time datetime={frontmatter.updatedDate.toISOString()}>{formatDate(frontmatter.updatedDate, 'chinese')}</time>
             </div>
           )
         }

@@ -209,7 +209,7 @@ export const POSTS_CONFIG: PostConfig = {
     type: 'time-line',
   },
   ogImageUseCover: true,
-  postType: 'coverSplit',
+  postType: 'metaOnly',
   imageDarkenInDark: true,
   readMoreText: '阅读更多',
   prevPageText: '上一页',

@@ -51,14 +51,14 @@ const recommendText = POSTS_CONFIG.recommendText
     <div class="flex flex-wrap items-center gap-4 text-sm text-muted-foreground/90 mb-2">
       <time class="flex items-center gap-2">
         <span class="icon-[ph--calendar-blank] size-4"></span>
-        {formatDate(post.data.pubDate)}
+        {formatDate(post.data.pubDate, 'chinese')}
       </time>
 
       {
         post.data.updatedDate && (
           <time class="flex items-center gap-2">
             <span class="icon-[ph--clock-clockwise] size-4" />
-            {formatDate(post.data.updatedDate)}
+            {formatDate(post.data.updatedDate, 'chinese')}
           </time>
         )
       }
@@ -76,12 +76,12 @@ const recommendText = POSTS_CONFIG.recommendText
       {post.data.tags?.map((tag) => <Badge type="tag" content={tag} />)}
     </div>
 
-    <a
+    <!-- <a
       href={`/posts/${post.id}`}
       class="sm:hidden mt-auto inline-flex items-center gap-2 text-sm font-medium text-foreground/90 hover:text-primary transition-colors group/read"
     >
       {POSTS_CONFIG.readMoreText}
       <span class="icon-[ph--arrow-right] size-4 transition-transform group-hover/read:translate-x-1"></span>
-    </a>
+    </a> -->
   </div>
 </article>
