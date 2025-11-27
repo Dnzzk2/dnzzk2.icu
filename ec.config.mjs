@@ -13,11 +13,11 @@ export default defineEcConfig({
   minSyntaxHighlightingColorContrast: 0,
 
   styleOverrides: {
-    uiFontFamily: 'GeistMono, Input Mono, Fira Code, Shanggu Sans SC VF, monospace',
+    uiFontFamily: 'GeistMono, Input Mono, Fira Code, LXGW WenKai, monospace',
     uiFontSize: '1em',
-    codeFontFamily: 'GeistMono, Input Mono, Fira Code, Shanggu Sans SC VF, monospace',
+    codeFontFamily: 'GeistMono, Input Mono, Fira Code, LXGW WenKai, monospace',
     codeFontSize: '14px',
-    codeLineHeight: '1.4',
+    codeLineHeight: '1.9',
     borderRadius: '0',
     codePaddingBlock: '0.8571429em',
     codePaddingInline: '1.1428571em',

@@ -52,7 +52,7 @@
 /* ===== 基础样式重置 ===== */
 .markdown {
   color: var(--color-text-secondary);
-  font-size: 0.9375rem;
+  font-size: 1rem;
   line-height: 1.75;
 
   /* 现代文本换行 */

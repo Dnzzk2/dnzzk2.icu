@@ -48,7 +48,7 @@ const getRelativeIndentClass = (depth: number) => {
       >
         {
           filteredHeadings.map((heading) => {
-            const depthClass = heading.depth === 1 ? 'font-medium text-foreground' : 'text-foreground/60 hover:text-foreground/90'
+            const depthClass = heading.depth === 1 ? 'font-medium text-foreground' : 'text-foreground/60 hover:text-foreground'
 
             return (
               <li class={cn(depthClass, getRelativeIndentClass(heading.depth) || '')}>

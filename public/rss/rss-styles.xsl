@@ -29,7 +29,7 @@
         <link rel="preload" href="/fonts/Lexend-VariableFont_wght.woff2" as="font" type="font/woff2" />
         <link rel="preload" href="/fonts/ZhudouSansVF-subset.woff2" as="font" type="font/woff2" />
         <link rel="preload" href="/fonts/GeistMono[wght].woff2" as="font" type="font/woff2" />
-        <link rel="stylesheet" href="/fonts/ShangguSansSC-VF/result.css" />
+        <link rel="stylesheet" href="/fonts/LXGW-WenKai/result.css" />
         <link rel="stylesheet" href="/rss/rss.css" />
         <script src="/js/theme.js"></script>
       </head>
