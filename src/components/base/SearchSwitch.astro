@@ -5,8 +5,8 @@
 <button
   class="inline-flex items-center text-foreground cursor-pointer hover:scale-105 size-6 origin-center"
   id="search-switch"
-  aria-label="Search"
-  title="Search (Ctrl+K)"
+  aria-label="搜索"
+  title="搜索 (Ctrl+K)"
 >
     <span class="icon-[material-symbols--manage-search] size-6"></span>
 </button>
@@ -16,17 +16,16 @@
       <div id="search-panel" class="grid grid-rows-[auto_1fr] max-h-[80vh] w-[22rem] sm:w-[40rem] bg-background/95 dark:bg-background/95 border border-border shadow-lg dark:shadow-accent/20 overflow-hidden">
       <div id="search-bar" class="grid grid-cols-[auto_1fr_auto_auto] items-center gap-2 px-4 h-12 border-b border-border">
         <span class="icon-[material-symbols--manage-search] size-6 text-muted-foreground"></span>
-        <label class="sr-only" for="search-input">Search</label>
+        <label class="sr-only" for="search-input">搜索</label>
         <input
           type="search"
           id="search-input"
           class="w-full h-8 bg-transparent outline-none text-foreground placeholder:text-muted-foreground font-normal leading-8 text-base"
-          placeholder="Search"
+          placeholder="搜索"
           autocomplete="off"
         />
         <button id="search-exact" class="inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded border border-border text-muted-foreground hover:bg-accent select-none" aria-pressed="false" title="精确匹配">
-          <span class="icon-[material-symbols--format-quote] size-4"></span>
-          Exact
+          精准查找
         </button>
         <kbd class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 text-xs text-muted-foreground bg-muted rounded">ESC</kbd>
       </div>
