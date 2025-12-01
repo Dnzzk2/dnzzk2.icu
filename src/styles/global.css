@@ -108,8 +108,8 @@
 
   @media (min-width: 136rem) {
     :root {
-      --layout-width: 64rem; /* max-w-5xl */
-      --layout-half-width: 32rem;
+      --layout-width: 56rem; /* max-w-4xl */
+      --layout-half-width: calc(var(--layout-width) / 2);
     }
   }
 
