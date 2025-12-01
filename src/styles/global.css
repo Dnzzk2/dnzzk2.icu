@@ -108,7 +108,6 @@
 
   @media (min-width: 136rem) {
     :root {
-      font-size: 20px; /* 在大屏宽布局下，稍微增大字体以提升阅读体验 */
       --layout-width: 64rem; /* max-w-5xl */
       --layout-half-width: 32rem;
     }
