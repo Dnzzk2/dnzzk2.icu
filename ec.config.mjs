@@ -16,7 +16,7 @@ export default defineEcConfig({
     uiFontFamily: 'CJKEmDash,LXGW WenKai, GeistMono, Input Mono, Fira Code,  monospace',
     uiFontSize: '1em',
     codeFontFamily: 'CJKEmDash, LXGW WenKai, GeistMono, Input Mono, Fira Code,  monospace',
-    codeFontSize: '14px',
+    codeFontSize: '0.875rem',
     codeLineHeight: '1.4',
     borderRadius: '0',
     codePaddingBlock: '0.8571429em',

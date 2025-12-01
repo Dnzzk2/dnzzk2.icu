@@ -38,7 +38,7 @@ const recommendText = POSTS_CONFIG.recommendText
     }
 
     <header class="px-6 sm:px-8 py-6">
-      <div class="max-w-3xl mx-auto">
+      <div class="global-layout-width mx-auto">
         {frontmatter.description && <p class="text-sm text-muted-foreground/90 leading-relaxed mb-4">{frontmatter.description}</p>}
 
         <div class="space-y-3 sm:space-y-4">
@@ -85,7 +85,7 @@ const recommendText = POSTS_CONFIG.recommendText
     </header>
   </div>
 
-  <main class="px-6 sm:px-8 pb-10 max-w-3xl mx-auto fade-up">
+  <main class="px-6 sm:px-8 pb-10 global-layout-width mx-auto fade-up">
     <Prose>
       <slot />
     </Prose>

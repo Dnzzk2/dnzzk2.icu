@@ -100,6 +100,23 @@
     /* 滚动条 */
     --scrollbar: 220 20% 80%;
     --scrollbar-bg: 220 25% 95%;
+
+    /* 布局宽度变量 */
+    --layout-width: 48rem; /* max-w-3xl */
+    --layout-half-width: 24rem;
+  }
+
+  @media (min-width: 136rem) {
+    :root {
+      font-size: 20px; /* 在大屏宽布局下，稍微增大字体以提升阅读体验 */
+      --layout-width: 64rem; /* max-w-5xl */
+      --layout-half-width: 32rem;
+    }
+  }
+
+  /* 全局布局宽度工具类 */
+  .global-layout-width {
+    max-width: var(--layout-width);
   }
 
   /* 暗色模式变量 */
