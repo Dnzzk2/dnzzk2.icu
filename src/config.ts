@@ -1,8 +1,8 @@
 import type {
+  AnalyticsConfig,
   CommentConfig,
   GithubConfig,
   Link,
-  PhotoData,
   PhotosConfig,
   PostConfig,
   ProjectConfig,
@@ -68,7 +68,7 @@ export const SOCIAL_LINKS: SocialLink[] = [
     name: 'github',
     url: 'https://github.com/Dnzzk2',
     icon: 'icon-[ri--github-fill]',
-    count: 17,
+    count: 19,
   },
   {
     name: 'qq',
@@ -221,6 +221,17 @@ export const POSTS_CONFIG: PostConfig = {
   recommendText: '精选',
 }
 
+export const ANALYTICS_CONFIG: AnalyticsConfig = {
+  busuanzi: {
+    enabled: true,
+  },
+  umami: {
+    enabled: true,
+    websiteId: '5237dab1-1d06-4422-a5f9-9f54ef14f434',
+    serverUrl: 'https://cloud.umami.is/script.js',
+  },
+}
+
 export const COMMENT_CONFIG: CommentConfig = {
   enabled: true,
   system: 'gitalk',
@@ -256,105 +267,3 @@ export const PHOTOS_CONFIG: PhotosConfig = {
   description: 'Dnzzk2 的照片作品集 - 记录生活中的美好瞬间，分享风景、人像、街拍等照片，探索光影之美与构图技巧。',
   introduce: '在这里我会记录一些在日常生活中拍摄的照片。',
 }
-
-export const PhotosList: PhotoData[] = [
-  {
-    title: '朋友家的可爱猫猫',
-    icon: {
-      type: 'emoji',
-      value: '🌠',
-    },
-    description: '太卡哇伊(*^ω^*)了,cute.',
-    date: '2025-06-21',
-    travel: '',
-    photos: [
-      {
-        src: '/photos/cat1.webp',
-        alt: '朋友家的可爱猫猫',
-        width: 1080,
-        height: 810,
-        variant: '4x3',
-      },
-      {
-        src: '/photos/cat2.webp',
-        alt: '朋友家的可爱猫猫',
-        width: 1080,
-        height: 810,
-        variant: '4x3',
-      },
-      {
-        src: '/photos/cat3.webp',
-        alt: '朋友家的可爱猫猫',
-        width: 1080,
-        height: 810,
-        variant: '4x3',
-      },
-      {
-        src: '/photos/cat4.webp',
-        alt: '朋友家的可爱猫猫',
-        width: 1080,
-        height: 810,
-        variant: '4x3',
-      },
-    ],
-  },
-  {
-    title: '宁波 · 东钱湖',
-    icon: {
-      type: 'emoji',
-      value: '🌅',
-    },
-    description: '东钱湖骑行，虽然腿抽筋了几次，但是风景很美。',
-    date: '2025-03-01',
-    travel: '',
-    photos: [
-      {
-        src: '/photos/dqh1.webp',
-        alt: '宁波·东钱湖',
-        width: 1080,
-        height: 1358,
-        variant: '4x5',
-      },
-      {
-        src: '/photos/dqh2.jpg',
-        alt: '宁波·东钱湖',
-        width: 1080,
-        height: 1080,
-        variant: '1x1',
-      },
-      {
-        src: '/photos/dqh3.jpg',
-        alt: '宁波·东钱湖',
-        width: 1440,
-        height: 1080,
-        variant: '4x3',
-      },
-    ],
-  },
-  {
-    title: '宁波 · 舟山',
-    icon: {
-      type: 'emoji',
-      value: '🌉',
-    },
-    description: '',
-    date: '2024-09-07',
-    travel: '',
-    photos: [
-      {
-        src: '/photos/zs1.webp',
-        alt: '宁波·舟山',
-        width: 1210,
-        height: 908,
-        variant: '4x3',
-      },
-      {
-        src: '/photos/zs2.webp',
-        alt: '宁波·舟山',
-        width: 1080,
-        height: 810,
-        variant: '4x3',
-      },
-    ],
-  },
-]

@@ -139,16 +139,19 @@ const PhotoGalleryModal: React.FC<Props> = ({ photos, title, description, isOpen
                   onDragEnd={handleDragEnd}
                   transition={{ type: 'tween', duration: 0.5, ease: 'easeOut' }}
                 >
-                  {photos.map((photo) => (
-                    <div key={photo.src} className="flex items-center justify-center shrink-0" style={{ width: containerWidth }}>
-                      <img
-                        draggable={false}
-                        src={photo.src}
-                        alt={photo.alt}
-                        className="max-w-full max-h-full object-contain select-none pointer-events-none"
-                      />
-                    </div>
-                  ))}
+                  {photos.map((photo) => {
+                    const imgSrc = typeof photo.src === 'string' ? photo.src : photo.src.src
+                    return (
+                      <div key={imgSrc} className="flex items-center justify-center shrink-0" style={{ width: containerWidth }}>
+                        <img
+                          draggable={false}
+                          src={imgSrc}
+                          alt={photo.alt}
+                          className="max-w-full max-h-full object-contain select-none pointer-events-none"
+                        />
+                      </div>
+                    )
+                  })}
                 </motion.div>
               </div>
 

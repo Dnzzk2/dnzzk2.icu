@@ -103,13 +103,12 @@
 
     /* 布局宽度变量 */
     --layout-width: 48rem; /* max-w-3xl */
-    --layout-half-width: 24rem;
+    --layout-half-width: calc(var(--layout-width) / 2);
   }
 
   @media (min-width: 136rem) {
     :root {
       --layout-width: 56rem; /* max-w-4xl */
-      --layout-half-width: calc(var(--layout-width) / 2);
     }
   }
 
@@ -156,7 +155,7 @@
   }
 
   body {
-    @apply min-h-screen bg-background text-foreground;
+    @apply min-h-screen bg-background text-foreground leading-relaxed;
   }
 
   /* 标题样式 */

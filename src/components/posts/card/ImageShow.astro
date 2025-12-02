@@ -7,7 +7,7 @@ import type { CardProps } from './List.astro'
 
 interface Props extends CardProps {}
 
-const { post, index, coverLayout }: Props = Astro.props
+const { post, index, coverLayout, class: className, style }: Props = Astro.props
 
 // 固定图片尺寸为 1200*630，宽高比约为 1.9:1
 const IMAGE_WIDTH = 1200
@@ -18,7 +18,7 @@ const isReverse = imagePosition === 'right'
 const recommendText = POSTS_CONFIG.recommendText
 ---
 
-<article class={`group flex flex-col sm:flex-row gap-6 sm:gap-10 ${isReverse ? 'sm:flex-row-reverse' : ''}`}>
+<article class:list={[`group flex flex-col sm:flex-row gap-6 sm:gap-10 ${isReverse ? 'sm:flex-row-reverse' : ''}`, className]} {style}>
   <div class="sm:w-2/6 min-[136rem]:w-2/8 flex flex-col overflow-hidden">
     <a href={`/posts/${post.id}`} class="block relative">
       <div class="aspect-[1200/630] overflow-hidden bg-muted/30 relative">
