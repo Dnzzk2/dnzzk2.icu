@@ -19,7 +19,7 @@ export function postsSort(posts: CollectionEntry<'posts'>[]) {
 export type DateFormat = 'default' | 'dot' | 'short' | 'iso' | 'chinese'
 
 // 日期格式化函数
-export const formatDate = (date: Date, format: DateFormat = 'default'): string => {
+export const formatDate = (date: Date, format: DateFormat = 'chinese'): string => {
   switch (format) {
     case 'dot':
       // 2020.03.03 格式
