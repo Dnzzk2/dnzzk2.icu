@@ -81,7 +81,15 @@ const config = licenseConfig[license] || {
   description: license,
 }
 
-const currentUrl = url || Astro.url.href
+const currentUrl =
+  url ||
+  (() => {
+    const urlObj = new URL(Astro.url.href)
+    if (urlObj.pathname.endsWith('.html')) {
+      urlObj.pathname = urlObj.pathname.replace(/\.html$/, '')
+    }
+    return urlObj.toString()
+  })()
 ---
 
 <div
@@ -92,8 +100,11 @@ const currentUrl = url || Astro.url.href
 >
   <div class="absolute inset-0 bg-grid-pattern opacity-[0.02] dark:opacity-[0.05] pointer-events-none"></div>
 
-  <div class="absolute -top-3 right-1 sm:top-2 sm:right-2 cursor-default">
-    <div class="text-[8rem] font-bold text-muted-foreground/[0.08] dark:text-muted-foreground/[0.12] select-none leading-none">©</div>
+  <div class="absolute bottom-0 right-1.5 sm:bottom-3.5 sm:right-3 cursor-default">
+    <div
+      class="text-[2rem] sm:text-[6rem] font-bold text-muted-foreground/[0.08] dark:text-muted-foreground/[0.12] select-none leading-none icon-[lucide--copyright]"
+    >
+    </div>
   </div>
 
   <div class="relative space-y-2.5 sm:space-y-3 text-xs sm:text-sm">
