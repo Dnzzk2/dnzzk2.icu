@@ -93,10 +93,19 @@ const ogImage = new URL(image || SITE.ogImage, Astro.url)
         if (oldScript) {
           oldScript.remove()
         }
-        const script = document.createElement('script')
-        script.src = 'https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js'
-        script.defer = true
-        document.head.appendChild(script)
+
+        const loadScript = () => {
+          const script = document.createElement('script')
+          script.src = 'https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js'
+          script.defer = true
+          document.head.appendChild(script)
+        }
+
+        if (document.prerendering) {
+          document.addEventListener('prerenderingchange', loadScript, { once: true })
+        } else {
+          loadScript()
+        }
       })
     </script>
   )
