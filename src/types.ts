@@ -251,9 +251,6 @@ export interface GitalkConfig {
 }
 
 export interface AnalyticsConfig {
-  busuanzi?: {
-    enabled: boolean
-  }
   umami?: {
     enabled: boolean
     websiteId: string

@@ -222,9 +222,6 @@ export const POSTS_CONFIG: PostConfig = {
 }
 
 export const ANALYTICS_CONFIG: AnalyticsConfig = {
-  busuanzi: {
-    enabled: true,
-  },
   umami: {
     enabled: true,
     websiteId: '5237dab1-1d06-4422-a5f9-9f54ef14f434',

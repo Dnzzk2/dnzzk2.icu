@@ -85,31 +85,7 @@ const ogImage = new URL(image || SITE.ogImage, Astro.url)
     ></script>
   )
 }
-{
-  ANALYTICS_CONFIG.busuanzi?.enabled && (
-    <script is:inline>
-      document.addEventListener('astro:page-load', () => {
-        const oldScript = document.querySelector('script[src*="busuanzi.pure.mini.js"]')
-        if (oldScript) {
-          oldScript.remove()
-        }
 
-        const loadScript = () => {
-          const script = document.createElement('script')
-          script.src = 'https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js'
-          script.defer = true
-          document.head.appendChild(script)
-        }
-
-        if (document.prerendering) {
-          document.addEventListener('prerenderingchange', loadScript, { once: true })
-        } else {
-          loadScript()
-        }
-      })
-    </script>
-  )
-}
 {
   ANALYTICS_CONFIG.google?.enabled && (
     <>
