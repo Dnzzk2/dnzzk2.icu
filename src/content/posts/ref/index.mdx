@@ -1,0 +1,334 @@
+---
+title: 'React useRef 知识笔记'
+description: 'React 的 useRef hook 相关的知识笔记，包括 useRef 的介绍、使用场景、特殊情况等，持续更新中...'
+pubDate: 2025-12-05
+author: 'Dnzzk2'
+recommend: false
+tags: ['笔记', 'React', 'useRef']
+cover: 'assets/og.png'
+draft: false
+---
+
+## 前言
+
+本文记录我在学习 React 的过程中，所认识到的一些与 useRef 相关的知识，如果其中有什么不对的地方，可以给我[发邮件](mailto:dnzzk2@126.com)指正，或者在评论区留言，谢谢。
+
+## 什么是 useRef
+
+`useRef` 是一个 React Hook，它允许你引用一个**不需要渲染**的值。你可以把它看作是一个**在组件的整个生命周期内保持持久**的“盒子”。
+
+它返回一个包含 `current` 属性的可变对象。
+
+```jsx
+const ref = useRef(initialValue)
+// ref 的结构：{ current: initialValue }
+```
+
+### 核心特性
+
+- **持久化存储**：在组件的后续渲染中，`useRef` 将始终返回**同一个**对象引用。
+- **不触发重渲染**：更改 `ref.current` 属性**不会**触发组件的重新渲染。这使得它非常适合存储那些不影响视图的数据（如定时器 ID）。
+- **DOM 访问**：最常见的用法是将其作为 `ref` 属性传递给 JSX 节点，React 会自动将 DOM 节点赋值给 `current`。
+
+> [!NOTE]
+> 这里的介绍仅作为简要概览，更详尽的 API 说明建议直接查阅 [React 官方文档](https://zh-hans.react.dev/reference/react/useRef)。
+
+## 使用技巧
+
+在了解 useRef 之后，我们将逐步的了解一些使用技巧。
+
+### 存储定时器ID
+
+因为useRef不触发重渲染，适合存储不影响UI的数据。
+
+```jsx
+import { useRef } from 'react'
+
+function MyComponent() {
+  const intervalRef = useRef(null)
+
+  useEffect(() => {
+    intervalRef.current = setInterval(() => {
+      console.log('设置定时器')
+    }, 1000)
+
+    // 清理函数
+    return () => {
+      clearInterval(intervalRef.current)
+    }
+  }, []) // 空依赖数组表示只在组件挂载时执行
+
+  return <div>{/* 组件内容 */}</div>
+}
+```
+
+### 获取列表子元素DOM
+
+在 React 中，`useRef` 通常用于引用单个 DOM 元素。如果你需要获取一个**列表**（通过 `.map()` 渲染）中所有子元素的 DOM，不能简单地把同一个 `ref` 赋给它们，因为后面的元素会覆盖前面的。
+
+最佳实践是**使用 `useRef` 存储一个 `Map` 对象**，并通过**回调 `Ref (Callback Ref) `** 将每个 DOM 节点存入这个 Map 中。
+
+这种方法最稳健，因为它可以通过唯一的 ID 准确找到对应的 DOM，即使列表发生排序或增删，引用关系也不会乱。
+
+```jsx title="CarList.jsx"
+import { useRef } from 'react'
+
+function CatList() {
+  const itemsRef = useRef(null)
+
+  // 惰性初始化
+  if (itemsRef.current === null) {
+    itemsRef.current = new Map()
+  }
+
+  const cats = [
+    { id: 1, name: 'Tom' },
+    { id: 2, name: 'Jerry' },
+    { id: 3, name: 'Garfield' },
+  ]
+
+  function scrollToCat(catId) {
+    // 3. 使用 Map 获取指定 ID 的 DOM 节点
+    const map = itemsRef.current
+    const node = map.get(catId)
+
+    if (node) {
+      node.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'center',
+      })
+
+      // 也可以做其他操作，比如改变样式
+      node.style.backgroundColor = 'yellow'
+      setTimeout(() => (node.style.backgroundColor = ''), 1000)
+    }
+  }
+
+  return (
+    <div>
+      <nav>
+        <button onClick={() => scrollToCat(1)}>找 Tom</button>
+        <button onClick={() => scrollToCat(2)}>找 Jerry</button>
+        <button onClick={() => scrollToCat(3)}>找 Garfield</button>
+      </nav>
+
+      <ul>
+        {cats.map((cat) => (
+          <li
+            key={cat.id}
+            // 2. 使用回调 Ref
+            ref={(node) => {
+              const map = itemsRef.current
+              if (node) {
+                // 挂载时：存入 Map
+                map.set(cat.id, node)
+              } else {
+                // React18.x 卸载时：node 为 null，从 Map 中移除
+                map.delete(cat.id)
+              }
+
+              // React 19 会在卸载时执行这个函数
+              return () => {
+                map.delete(cat)
+              }
+            }}
+          >
+            {cat.name}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+export default CatList
+```
+
+#### 特殊情况：子元素是自定义组件
+
+如果你的列表项不是原生的 HTML 标签（如 `<li>`），而是自定义组件（如 `<MyListItem />`），你需要确保子组件使用了 `forwardRef`，否则 `ref` 无法透传到内部的 DOM 节点。
+
+子组件写法：
+
+```jsx title="MyListItem.jsx"
+import { forwardRef } from 'react'
+
+const MyListItem = forwardRef((props, ref) => {
+  return <li ref={ref}>{props.children}</li>
+})
+
+export default MyListItem
+```
+
+父组件用法保持不变：
+
+```jsx title="Father.jsx"
+// ... map 循环中
+<MyListItem
+  key={cat.id}
+  ref={(node) => {
+    /* 同样的 Map 逻辑 */
+  }}
+>
+  {cat.name}
+</MyListItem>
+```
+
+总结:
+
+- **不要**尝试创建一个 Ref 数组（如 [ref1, ref2]），这在 Hook 中很难管理。
+- **推荐**使用 `useRef(new Map())` 配合回调函数 `ref={node => map.set(id, node)}`。
+- 这种模式在处理动态列表（Infinite Scroll、拖拽排序、虚拟列表）时非常高效且标准。
+
+### 解决“闭包陷阱”
+
+在 `setTimeout、setInterval` 或原生事件监听器中，总是读取到“旧”的 State 值。
+
+**场景**：你需要做一个“发送消息”的功能，用户点击发送后，系统会显示“3秒后发送”。如果用户在这3秒内修改了消息内容，系统应该发送修改后的最新内容，而不是点击那一刻的旧内容。
+
+```jsx
+import { useState, useRef, useEffect } from 'react'
+
+function MessageSender() {
+  const [message, setMessage] = useState('')
+
+  // 关键：创建一个 Ref 来“镜像”最新的 message
+  const latestMessageRef = useRef('')
+
+  // 每次渲染，都把最新的 state 同步给 ref
+  // 这步操作是同步的，且不会触发副作用
+  useEffect(() => {
+    latestMessageRef.current = message
+  }, [message])
+
+  const handleSend = () => {
+    setTimeout(() => {
+      // 错误写法：console.log(message); // 这里永远是3秒前的值（闭包陷阱）
+
+      // 正确写法：读取 Ref
+      alert(`发送消息: ${latestMessageRef.current}`)
+    }, 3000)
+  }
+
+  return (
+    <div className="p-4 border rounded">
+      <h3>场景：解决异步闭包问题</h3>
+      <input value={message} onChange={(e) => setMessage(e.target.value)} placeholder="输入消息..." />
+      <button onClick={handleSend}>3秒后发送</button>
+      <p className="text-sm text-gray-500">点击发送后，试着立刻修改输入框内容</p>
+    </div>
+  )
+}
+```
+
+### usePrevious：追踪数据变化
+
+React 只告诉你现在的 State 是多少，没告诉你“上一次”是多少。
+
+**场景**：股票或数字看板。当数字变大时显示绿色箭头，变小时显示红色箭头。这需要对比 `current` 和 `prev` 。
+
+```jsx
+import { useState, useEffect, useRef } from 'react'
+
+// 封装成一个通用的 Hook
+function usePrevious(value) {
+  const ref = useRef()
+
+  useEffect(() => {
+    ref.current = value // 在渲染完成后，记录当前值，供下一次渲染使用
+  }, [value])
+
+  return ref.current // 返回的是“上一次”的值
+}
+
+function StockTicker() {
+  const [price, setPrice] = useState(100)
+  const prevPrice = usePrevious(price) // 获取上一次的价格
+
+  // 计算趋势
+  let trend = ''
+  if (prevPrice && price > prevPrice) trend = '涨了'
+  if (prevPrice && price < prevPrice) trend = '跌了'
+
+  return (
+    <div className="p-4 border rounded mt-4">
+      <h3>场景：记录上一次的值</h3>
+      <p>当前价格: ${price}</p>
+      <p>上次价格: ${prevPrice}</p>
+      <p>趋势: {trend}</p>
+
+      <button onClick={() => setPrice((p) => p + 10)}>加价</button>
+      <button onClick={() => setPrice((p) => p - 10)}>降价</button>
+    </div>
+  )
+}
+```
+
+### useUpdateEffect： 跳过首次渲染
+
+`useEffect` 默认在组件挂载（Mount）时也会执行。但有时候我们只想在数据更新（Update）时执行逻辑。其实就是首次加载不触发。
+
+**场景**：自动保存。当用户进入页面时（首次渲染），表单是空的，你不想触发“保存草稿”的 API 请求；只有当用户修改了内容（后续渲染）后，才触发保存。
+
+```jsx
+import { useState, useEffect, useRef } from 'react'
+
+function AutoSaveForm() {
+  const [text, setText] = useState('')
+  const isMountedRef = useRef(false) // 标记是否已经挂载
+
+  useEffect(() => {
+    // 如果是第一次渲染，将标记设为 true，然后直接结束
+    if (!isMountedRef.current) {
+      isMountedRef.current = true
+      return
+    }
+
+    // 从第二次渲染开始，才会执行下面的逻辑
+    console.log('正在保存草稿到服务器...', text)
+  }, [text])
+
+  return (
+    <div className="p-4 border rounded mt-4">
+      <h3>场景：跳过首次渲染 (AutoSave)</h3>
+      <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="开始打字以触发自动保存..." />
+    </div>
+  )
+}
+```
+
+#### useUpdateEffect的hook写法
+
+```jsx
+import { useState, useEffect, useRef } from 'react'
+
+function useUpdateEffect(effect, deps) {
+  const isMountedRef = useRef(false)
+
+  useEffect(() => {
+    if (!isMountedRef.current) {
+      isMountedRef.current = true
+      return
+    }
+
+    return effect()
+  }, deps)
+}
+
+function MyComponent() {
+  const [count, setCount] = useState(0)
+
+  // 只在 count 更新时打印日志，首次渲染时不打印
+  useUpdateEffect(() => {
+    console.log('Count updated:', count)
+  }, [count])
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+    </div>
+  )
+}
+```

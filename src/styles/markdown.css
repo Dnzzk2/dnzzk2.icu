@@ -83,25 +83,25 @@
   }
 
   & h1 {
-    font-size: clamp(1.75em, 4vw, 2em);
+    font-size: clamp(1.5em, 3vw, 1.8em);
     margin-block: 0 1em;
     line-height: 1.1111111;
   }
 
   & h2 {
-    font-size: clamp(1.375em, 3vw, 1.5em);
+    font-size: clamp(1.25em, 2.5vw, 1.4em);
     margin-block: 1.5em 0.75em;
     line-height: 1.3333333;
   }
 
   & h3 {
-    font-size: clamp(1.175em, 2.5vw, 1.25em);
+    font-size: clamp(1.125em, 2vw, 1.25em);
     margin-block: 1.25em 0.5em;
     line-height: 1.6;
   }
 
   & :is(h4, h5, h6) {
-    font-size: clamp(1em, 2vw, 1.125em);
+    font-size: clamp(1em, 1.5vw, 1.1em);
     margin-block: 1em 0.375em;
     line-height: 1.4;
   }
@@ -683,13 +683,13 @@ image-figure-polaroid {
 @container (width <= 600px) {
   .markdown {
     & h1 {
-      font-size: 1.75em;
+      font-size: 1.5em;
     }
     & h2 {
-      font-size: 1.375em;
+      font-size: 1.25em;
     }
     & h3 {
-      font-size: 1.175em;
+      font-size: 1.125em;
     }
   }
 }
