@@ -13,9 +13,9 @@ export default defineEcConfig({
   minSyntaxHighlightingColorContrast: 0,
 
   styleOverrides: {
-    uiFontFamily: 'CJKEmDash,LXGW WenKai, GeistMono, Input Mono, Fira Code,  monospace',
+    uiFontFamily: 'CJKEmDash,LXGW WenKai Screen, GeistMono, Input Mono, Fira Code,  monospace',
     uiFontSize: '1em',
-    codeFontFamily: 'CJKEmDash, LXGW WenKai, GeistMono, Input Mono, Fira Code,  monospace',
+    codeFontFamily: 'CJKEmDash, LXGW WenKai Screen, GeistMono, Input Mono, Fira Code,  monospace',
     codeFontSize: '0.875rem',
     codeLineHeight: '1.4',
     borderRadius: '0',

@@ -69,9 +69,9 @@
 @layer base {
   :root {
     /* 字体族 */
-    --font-lexend: 'Lexend', 'CJKEmDash', 'LXGW WenKai', sans-serif;
-    --font-sans: 'CJKEmDash', 'LXGW WenKai', sans-serif;
-    --font-geist-mono: 'CJKEmDash', 'LXGW WenKai', 'GeistMono', 'Input Mono', 'Fira Code', monospace;
+    --font-lexend: 'Lexend', 'CJKEmDash', 'LXGW WenKai Screen', sans-serif;
+    --font-sans: 'CJKEmDash', 'LXGW WenKai Screen', sans-serif;
+    --font-geist-mono: 'CJKEmDash', 'LXGW WenKai Screen', 'GeistMono', 'Input Mono', 'Fira Code', monospace;
 
     /* 基础色调 */
     --background: 255 100% 100%;

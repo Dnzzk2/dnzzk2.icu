@@ -33,9 +33,9 @@
 }
 
 :root {
-  --font-lexend: 'Lexend', 'CJKEmDash', 'LXGW WenKai', sans-serif;
-  --font-sans: 'CJKEmDash', 'LXGW WenKai', sans-serif;
-  --font-geist-mono: 'CJKEmDash', 'LXGW WenKai', 'GeistMono', 'Input Mono', 'Fira Code', monospace;
+  --font-lexend: 'Lexend', 'CJKEmDash', 'LXGW WenKai Screen', sans-serif;
+  --font-sans: 'CJKEmDash', 'LXGW WenKai Screen', sans-serif;
+  --font-geist-mono: 'CJKEmDash', 'LXGW WenKai Screen', 'GeistMono', 'Input Mono', 'Fira Code', monospace;
   --background: 255 100% 100%;
   --foreground: 225 15% 12%;
   --scrollbar: 220 20% 80%;
