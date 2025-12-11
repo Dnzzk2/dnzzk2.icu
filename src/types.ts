@@ -86,6 +86,7 @@ export interface PostConfig {
   nextPostText: string
   prevPostText: string
   recommendText: string
+  noPaginationLayouts: PostCardType[]
 }
 
 /**

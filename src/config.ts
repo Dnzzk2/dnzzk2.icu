@@ -215,8 +215,7 @@ export const POSTS_CONFIG: PostConfig = {
   },
   postPageConfig: {
     size: 10,
-    type: 'image',
-    coverLayout: 'right',
+    type: 'minimal',
   },
   tagsPageConfig: {
     size: 10,
@@ -233,6 +232,7 @@ export const POSTS_CONFIG: PostConfig = {
   nextPostText: '下一篇',
   prevPostText: '上一篇',
   recommendText: '精选',
+  noPaginationLayouts: ['time-line', 'minimal'],
 }
 
 export const ANALYTICS_CONFIG: AnalyticsConfig = {
