@@ -1,16 +1,19 @@
 ---
 import { cn } from '~/lib/utils'
+import { POSTS_CONFIG, CATEGORY_ICONS } from '~/config'
 
 interface Props {
   type: 'tag' | 'recommend'
   content: string
   class?: string
-  variant?: 'default' | 'gradient' | 'subtle' | 'outline'
+  variant?: 'default' | 'gradient' | 'subtle' | 'outline' | 'category'
   size?: 'sm' | 'md'
   showIcon?: boolean
 }
 
-const { type, content, class: className, variant = 'default', size = 'sm', showIcon = true }: Props = Astro.props
+const { type, content, class: className, variant, size = 'sm', showIcon = true }: Props = Astro.props
+
+const isCategory = type === 'tag' && POSTS_CONFIG.categories.includes(content)
 
 const sizeClasses = {
   sm: 'text-xs px-2 py-0.5 gap-1',
@@ -23,19 +26,36 @@ const variantClasses = {
     'border border-transparent bg-gradient-to-r from-slate-500/15 via-blue-500/15 to-indigo-500/15 text-slate-700 dark:text-slate-300 hover:from-slate-500/25 hover:via-blue-500/25 hover:to-indigo-500/25',
   subtle: 'bg-primary/10 text-primary hover:bg-primary/20 border border-transparent',
   outline: 'bg-muted/30 text-muted-foreground border border-border hover:bg-muted/50 hover:text-foreground',
+  category: 'bg-primary/5 text-primary hover:bg-primary/10 font-medium',
 }
 
 // 根据类型设置默认variant
-const defaultVariant = type === 'recommend' ? 'gradient' : 'default'
-const finalVariant = variant === 'default' ? defaultVariant : variant
+const determineVariant = () => {
+  if (variant) return variant
+  if (type === 'recommend') return 'gradient'
+  if (isCategory) return 'category'
+  return 'default'
+}
+
+const finalVariant = determineVariant()
 
 // 图标配置
 const iconConfig = {
   tag: 'icon-[heroicons--hashtag-16-solid]',
-  recommend: 'icon-[garden--sparkle-fill-16] ',
+  recommend: 'icon-[garden--sparkle-fill-16]',
+  category: 'icon-[ph--folder-open-fill]', // 默认分类图标
 }
 
-const iconClass = iconConfig[type]
+const getIconClass = () => {
+  if (type === 'recommend') return iconConfig.recommend
+  if (isCategory) {
+    // 优先使用特定分类的图标，如果没有则使用默认分类图标
+    return CATEGORY_ICONS[content] || iconConfig.category
+  }
+  return iconConfig.tag
+}
+
+const iconClass = getIconClass()
 ---
 
 {

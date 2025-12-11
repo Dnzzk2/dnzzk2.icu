@@ -75,10 +75,10 @@ if (hasPinnedPosts) {
       }
       <SectionDivider />
       <div class="py-8 pb-10 px-6 sm:px-8">
-        <h2 class="text-2xl sm:text-3xl tracking-tight">随笔</h2>
+        <h2 class="text-2xl sm:text-3xl tracking-tight">文章</h2>
         <p class="text-muted-foreground mb-6 mt-1">
           {hasPinnedPosts ? `置顶的` : '最新的'}
-          {showPosts.length} 篇随笔：
+          {showPosts.length} 篇文章：
         </p>
         <List posts={showPosts} {type} coverLayout={POSTS_CONFIG.homePageConfig?.coverLayout} />
       </div>

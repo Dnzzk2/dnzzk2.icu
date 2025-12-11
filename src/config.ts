@@ -26,7 +26,7 @@ export const SITE: Site = {
 
 export const HEADER_LINKS: Link[] = [
   {
-    name: '随笔',
+    name: '文章',
     url: '/posts',
   },
   {
@@ -45,7 +45,7 @@ export const FOOTER_LINKS: Link[] = [
     url: '/',
   },
   {
-    name: '随笔',
+    name: '文章',
     url: '/posts',
   },
   {
@@ -204,9 +204,9 @@ export const GITHUB_CONFIG: GithubConfig = {
 
 //--- Posts Page Config ---
 export const POSTS_CONFIG: PostConfig = {
-  title: '随笔',
+  title: '文章',
   description:
-    'Dnzzk2 的技术随笔与生活感悟 - 前端开发经验分享、UI 设计思考、JavaScript 技术探索、React 开发心得，以及照片与游戏的日常记录。',
+    'Dnzzk2 的技术文章与生活感悟 - 前端开发经验分享、UI 设计思考、JavaScript 技术探索、React 开发心得，以及照片与游戏的日常记录。',
   introduce: '我想，生命这卷书，落笔应是亭亭常青树。',
   author: 'Dnzzk2',
   homePageConfig: {
@@ -219,7 +219,7 @@ export const POSTS_CONFIG: PostConfig = {
   },
   tagsPageConfig: {
     size: 10,
-    type: 'time-line',
+    type: 'image',
   },
   ogImageUseCover: true,
   postType: 'metaOnly',
@@ -228,11 +228,19 @@ export const POSTS_CONFIG: PostConfig = {
   prevPageText: '上一页',
   nextPageText: '下一页',
   tocText: '本页目录',
-  backToPostsText: '返回随笔',
+  backToPostsText: '返回文章',
   nextPostText: '下一篇',
   prevPostText: '上一篇',
   recommendText: '精选',
   noPaginationLayouts: ['time-line', 'minimal'],
+  categories: ['技术', '随笔', '摄影', '游戏'],
+}
+
+export const CATEGORY_ICONS: Record<string, string> = {
+  技术: 'icon-[ph--code-bold]',
+  随笔: 'icon-[ph--pen-nib-bold]',
+  摄影: 'icon-[ph--camera-bold]',
+  游戏: 'icon-[ph--game-controller-bold]',
 }
 
 export const ANALYTICS_CONFIG: AnalyticsConfig = {
@@ -264,7 +272,7 @@ export const COMMENT_CONFIG: CommentConfig = {
 export const TAGS_CONFIG: TagsConfig = {
   title: '标签',
   description: '按标签浏览 Dnzzk2 的技术文章 - 前端开发、React、JavaScript、UI 设计、照片技巧等分类标签，快速找到您感兴趣的技术内容。',
-  introduce: '通过标签快速查找相关主题的随笔，发现您感兴趣的内容。',
+  introduce: '通过标签快速查找相关主题的文章，发现您感兴趣的内容。',
 }
 
 export const PROJECTS_CONFIG: ProjectConfig = {

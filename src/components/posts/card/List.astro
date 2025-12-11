@@ -42,8 +42,40 @@ type Props = {
 const { posts, type, customSpacing, coverLayout } = Astro.props
 const spacingClass = customSpacing || POST_CARD_SPACING_CLASSES[type]
 const PostCardElement = POST_CARD_COMPONENTS[type]
+
+// Group posts by year for minimal layout
+const groupedPosts =
+  type === 'minimal'
+    ? Object.entries(
+        posts.reduce(
+          (acc, post) => {
+            const year = (post.data.pubDate || post.data.updatedDate).getFullYear()
+            if (!acc[year]) acc[year] = []
+            acc[year].push(post)
+            return acc
+          },
+          {} as Record<number, typeof posts>
+        )
+      ).sort((a, b) => Number(b[0]) - Number(a[0]))
+    : []
 ---
 
 <div class={cn(spacingClass, 'content-visibility: auto')}>
-  {posts.map((post, index) => <PostCardElement {post} {index} {coverLayout} class="fade-up" style={`animation-delay: ${index * 100}ms`} />)}
+  {
+    type === 'minimal'
+      ? groupedPosts.map(([year, posts], i) => (
+          <div class="fade-up" style={`animation-delay: ${i * 100}ms`}>
+            <h2 class="text-xl sm:text-2xl font-bold mb-6 mt-4 font-mono select-none">{year}</h2>
+            <div class="space-y-4">
+              {posts.map((post, index) => (
+                <PostCardElement {post} {index} {coverLayout} />
+              ))}
+            </div>
+            <div class="h-12 sm:h-16" />
+          </div>
+        ))
+      : posts.map((post, index) => (
+          <PostCardElement {post} {index} {coverLayout} class="fade-up" style={`animation-delay: ${index * 100}ms`} />
+        ))
+  }
 </div>
