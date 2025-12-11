@@ -65,7 +65,7 @@ const groupedPosts =
     type === 'minimal'
       ? groupedPosts.map(([year, posts], i) => (
           <div class="fade-up" style={`animation-delay: ${i * 100}ms`}>
-            <h2 class="text-xl sm:text-2xl font-bold mb-6 mt-4 font-mono select-none">{year}</h2>
+            <h2 class="text-xl tracking-tighter sm:text-2xl font-bold mb-4 mt-4 font-mono select-none">{year}</h2>
             <div class="space-y-4">
               {posts.map((post, index) => (
                 <PostCardElement {post} {index} {coverLayout} />

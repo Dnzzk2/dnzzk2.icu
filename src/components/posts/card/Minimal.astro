@@ -8,9 +8,9 @@ const { post, class: className, style }: Props = Astro.props
 const displayDate = post.data.updatedDate || post.data.pubDate
 ---
 
-<article class:list={['group flex flex-row items-baseline gap-2 sm:gap-4', className]} {style}>
+<article class:list={['group flex flex-row items-baseline', className]} {style}>
   <time
-    class="flex-shrink-0 text-sm sm:text-base text-muted-foreground/80 transition-colors group-hover:text-muted-foreground/80 w-20 sm:w-24"
+    class="flex-shrink-0 tracking-tighter text-sm sm:text-base text-muted-foreground/80 transition-colors group-hover:text-muted-foreground/80 w-20 sm:w-24"
   >
     {formatDate(displayDate, 'dot')}
   </time>
