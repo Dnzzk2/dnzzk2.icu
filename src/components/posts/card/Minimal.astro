@@ -10,13 +10,13 @@ const displayDate = post.data.updatedDate || post.data.pubDate
 
 <article class:list={['group flex flex-row items-baseline', className]} {style}>
   <time
-    class="flex-shrink-0 tracking-tighter text-sm sm:text-base text-muted-foreground/80 transition-colors group-hover:text-muted-foreground/80 w-20 sm:w-24"
+    class="flex-shrink-0 tracking-tighter text-sm sm:text-base text-muted-foreground/60 transition-colors group-hover:text-muted-foreground w-20 sm:w-24"
   >
     {formatDate(displayDate, 'dot')}
   </time>
 
   <a href={`/posts/${post.id}`} class="flex-1 block">
-    <div class="text-sm sm:text-base group-hover:text-primary">
+    <div class="text-sm sm:text-base text-foreground/80 transition-colors group-hover:text-primary">
       {post.data.title}
     </div>
   </a>

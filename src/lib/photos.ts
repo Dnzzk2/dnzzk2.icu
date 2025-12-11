@@ -8,8 +8,36 @@ import dqh2 from '~/assets/photos/dqh2.jpg'
 import dqh3 from '~/assets/photos/dqh3.jpg'
 import zs1 from '~/assets/photos/zs1.webp'
 import zs2 from '~/assets/photos/zs2.webp'
+import work from '~/assets/photos/work.jpg'
+import park1 from '~/assets/photos/park1.jpg'
 
 export const PhotosList: PhotoData[] = [
+  {
+    title: 'Dazz App',
+    icon: {
+      type: 'emoji',
+      value: '📸',
+    },
+    description: '近期购买了Dazz Pro，用 Dazz 相机 App 拍了一些照片，效果相当不错。',
+    date: '2025-12-11',
+    travel: '',
+    photos: [
+      {
+        src: work,
+        alt: 'Dazz App',
+        width: work.width,
+        height: work.height,
+        variant: '4x3',
+      },
+      {
+        src: park1,
+        alt: 'Dazz App',
+        width: park1.width,
+        height: park1.height,
+        variant: '4x3',
+      },
+    ],
+  },
   {
     title: '朋友家的可爱猫猫',
     icon: {
