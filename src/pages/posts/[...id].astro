@@ -12,6 +12,7 @@ import { getAllPosts } from '~/lib/data'
 import Comment from '~/components/posts/base/Comment.astro'
 import License from '~/components/posts/base/License.astro'
 import SectionDivider from '~/components/base/SectionDivider.astro'
+import Map from '~/components/map/Map.tsx'
 
 export async function getStaticPaths() {
   const sortedPosts = await getAllPosts()
@@ -49,6 +50,11 @@ const PostLayout = layoutMap[layoutKey]
   image={frontmatter.ogImage?.src ? `${SITE.website}/${frontmatter.ogImage.src}` : SITE.ogImage}
 >
   <div class="relative flex flex-col justify-between h-fit z-[1]">
+    <div
+      class="hidden xl:block fixed top-30 left-[calc(50%-var(--layout-half-width))] -translate-x-full w-[clamp(16rem,20vw,24rem)] h-[clamp(19.2rem,24vw,28.8rem)] pr-6"
+    >
+      <Map client:only="react" />
+    </div>
     <TocMobile {post} {posts} headings={filterHeadings} />
     <PostLayout {frontmatter} minutesRead={remarkPluginFrontmatter.minutesRead} wordCount={remarkPluginFrontmatter.wordCount}>
       <Content />
