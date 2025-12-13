@@ -61,6 +61,21 @@ const PhotoGalleryModal: React.FC<Props> = ({ photos, title, description, isOpen
     return () => clearTimeout(timer)
   }, [currentIndex, containerWidth, isOpen])
 
+  useEffect(() => {
+    if (!isOpen) return
+    const top = window.scrollY // 记录当前滚动位置
+    // 计算滚动条宽度
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
+    // 防止背景滚动，同时补偿滚动条宽度以保持布局
+    document.body.style.overflow = 'hidden'
+    document.body.style.paddingRight = `${scrollbarWidth}px`
+    return () => {
+      document.body.style.overflow = ''
+      document.body.style.paddingRight = ''
+      window.scrollTo(0, top)
+    }
+  }, [isOpen])
+
   // 拖拽结束时吸附到最近图片，判定边界放宽到 7%
   const handleDragEnd = useCallback(
     (_: any, info: { offset: { x: number } }) => {
